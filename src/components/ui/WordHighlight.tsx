@@ -13,12 +13,12 @@ function Word({ word, progress, range }: { word: string; progress: MotionValue<n
 }
 
 /** A paragraph whose words light up one by one as you scroll through it. */
-export default function WordHighlight({ text, className = "" }: { text: string; className?: string }) {
+export default function WordHighlight({ text, className = "", cms }: { text: string; className?: string; cms?: { "data-cms"?: string } }) {
   const ref = useRef<HTMLParagraphElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.85", "end 0.45"] });
   const words = text.split(" ");
   return (
-    <p ref={ref} className={className}>
+    <p ref={ref} className={className} {...cms}>
       <span className="sr-only">{text}</span>
       <span aria-hidden="true">
         {words.map((w, i) => (

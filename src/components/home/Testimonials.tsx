@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import type { Testimonial } from "@/content/types";
 import { EASE_LUXE } from "@/lib/motion";
+import { cms } from "@/cms/mark";
 
 export default function Testimonials({ items: testimonials }: { items: Testimonial[] }) {
   const [i, setI] = useState(0);
@@ -40,8 +41,10 @@ export default function Testimonials({ items: testimonials }: { items: Testimoni
               exit={{ opacity: 0, y: -16, filter: "blur(6px)" }}
               transition={{ duration: 0.9, ease: EASE_LUXE }}
             >
-              <blockquote className="font-serif text-[clamp(28px,3.2vw,46px)] font-light italic leading-[1.3]">“{q.text}”</blockquote>
-              <figcaption className="eyebrow mt-9 text-bronze-light">{q.who}</figcaption>
+              <blockquote className="font-serif text-[clamp(28px,3.2vw,46px)] font-light italic leading-[1.3]" {...cms(q._id, "text")}>“{q.text}”</blockquote>
+              <figcaption className="eyebrow mt-9 text-bronze-light" {...cms(q._id, "who")}>
+                {q.who}
+              </figcaption>
             </motion.figure>
           </AnimatePresence>
         </div>

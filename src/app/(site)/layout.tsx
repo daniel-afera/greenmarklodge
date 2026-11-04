@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { MotionConfig } from "motion/react";
-import { getMenuPreviews, getSettings } from "@/content";
+import { getMenuPreviews, getSettings, isEditing } from "@/content";
+import { unpublishedRows } from "@/cms/store";
+import EditMode from "@/components/admin/EditMode";
 import { SiteProvider } from "@/components/layout/SiteContext";
 import SmoothScroll from "@/components/layout/SmoothScroll";
 import Preloader from "@/components/layout/Preloader";
@@ -19,19 +21,20 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SiteLayout({ children }: LayoutProps<"/">) {
-  const [settings, menuPreviews] = await Promise.all([getSettings(), getMenuPreviews()]);
+  const [settings, menuPreviews, editing] = await Promise.all([getSettings(), getMenuPreviews(), isEditing()]);
+  const unpublished = editing ? (await unpublishedRows()).length : 0;
   return (
-    <SiteProvider value={{ settings, menuPreviews }}>
+    <SiteProvider value={{ settings, menuPreviews, editing }}>
       <MotionConfig reducedMotion="user">
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:bg-ivory focus:px-4 focus:py-2">
           Skip to content
         </a>
         <SmoothScroll />
-        <Preloader />
+        {!editing && <Preloader />}
         <Header />
         <main id="main">{children}</main>
         <Footer settings={settings} />
-        <Cursor />
+        {editing ? <EditMode unpublished={unpublished} /> : <Cursor />}
       </MotionConfig>
     </SiteProvider>
   );

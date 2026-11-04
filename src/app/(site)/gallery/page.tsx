@@ -12,7 +12,7 @@ export default async function GalleryPage() {
   const page = await getGalleryPage();
   return (
     <>
-      <PageHero hero={page.hero} />
+      <PageHero hero={page.hero} doc="galleryPage" />
       <div className="pt-[clamp(64px,8vw,120px)]">
         <GalleryGrid images={page.images} />
       </div>

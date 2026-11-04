@@ -3,7 +3,8 @@
 import { createContext, useContext, type ReactNode } from "react";
 import type { MenuPreviews, SiteSettings } from "@/content/types";
 
-type Ctx = { settings: SiteSettings; menuPreviews: MenuPreviews };
+/** `editing`: on-site edit mode (no preloader, curtain or custom cursor). */
+type Ctx = { settings: SiteSettings; menuPreviews: MenuPreviews; editing?: boolean };
 
 const SiteCtx = createContext<Ctx | null>(null);
 

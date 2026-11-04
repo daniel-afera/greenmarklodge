@@ -1,25 +1,41 @@
 /**
  * Server-side content getters. Every page reads its content through these.
  *
- * Today the content is built in (src/content/fallback.ts). When the custom
- * CMS is connected, `fetchDoc` / `fetchList` will read from the database;
- * anything missing or empty is filled from the built-in content field by
- * field, so the site never renders a blank section.
+ * Content comes from the Supabase CMS (src/cms/db.ts): published content
+ * for visitors, drafts in draft mode. Anything missing or empty is filled
+ * from the built-in content (src/content/fallback.ts) field by field, so
+ * the site never renders a blank section — and works with no CMS at all.
  */
 import { cache } from "react";
+import { draftMode } from "next/headers";
+import { staffOrNull } from "@/cms/auth";
+import { readDoc, readList } from "@/cms/db";
 import * as F from "./fallback";
 import type * as T from "./types";
 
-/** Load a single page/settings document. Returns null until a CMS is connected. */
-async function fetchDoc(_id: string): Promise<unknown> {
-  void _id;
-  return null;
+/**
+ * Edit mode = draft mode AND a signed-in staff member (a leftover draft
+ * cookie alone never shows drafts). Draft mode is only readable inside a
+ * request; at build time (generateStaticParams) it's off.
+ */
+export const isEditing = cache(async () => {
+  try {
+    if (!(await draftMode()).isEnabled) return false;
+  } catch {
+    return false;
+  }
+  return (await staffOrNull()) !== null;
+});
+const isDraft = isEditing;
+
+/** Load a single page/settings document (null → built-in content). */
+async function fetchDoc(id: string): Promise<unknown> {
+  return readDoc(id, await isDraft());
 }
 
-/** Load a collection (rooms, experiences, …). Returns null until a CMS is connected. */
-async function fetchList(_type: string): Promise<unknown[] | null> {
-  void _type;
-  return null;
+/** Load a collection (rooms, experiences, …) in order (null → built-in content). */
+async function fetchList(type: string): Promise<unknown[] | null> {
+  return readList(type, await isDraft());
 }
 
 /** Drop null / empty-string values so the fallback fills them. */
@@ -38,7 +54,7 @@ function normalize(v: unknown): unknown {
 const isPlainObject = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
 
 /** Deep-merge `data` over `fallback`: missing / empty values use the fallback. Images are replaced whole. */
-function merge<T>(fallback: T, data: unknown): T {
+export function merge<T>(fallback: T, data: unknown): T {
   if (data === undefined) return fallback;
   if (Array.isArray(fallback)) return (Array.isArray(data) && data.length ? data : fallback) as T;
   if (isPlainObject(fallback) && !("src" in fallback)) {
@@ -53,6 +69,21 @@ function merge<T>(fallback: T, data: unknown): T {
 async function single<T>(id: string, fallback: T): Promise<T> {
   return merge(fallback, normalize(await fetchDoc(id)));
 }
+
+/** Built-in content per singleton id (the editor starts from these). */
+export const fallbackDocs: Record<string, unknown> = {
+  siteSettings: F.fallbackSettings,
+  homePage: F.fallbackHome,
+  roomsPage: F.fallbackRoomsPage,
+  diningPage: F.fallbackDiningPage,
+  spaPage: F.fallbackSpaPage,
+  experiencesPage: F.fallbackExperiencesPage,
+  galleryPage: F.fallbackGalleryPage,
+  contactPage: F.fallbackContactPage,
+};
+
+/** A stored singleton value with built-in content filled into empty fields. */
+export const withFallback = (id: string, value: unknown) => (fallbackDocs[id] ? merge(fallbackDocs[id], normalize(value)) : value);
 
 async function list<T>(type: string, fallback: T[]): Promise<T[]> {
   const data = await fetchList(type);

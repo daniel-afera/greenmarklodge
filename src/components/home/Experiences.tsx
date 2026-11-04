@@ -8,6 +8,7 @@ import { motion, useScroll, useTransform, type MotionValue } from "motion/react"
 import { useRef } from "react";
 import MaskText from "@/components/ui/MaskText";
 import Reveal from "@/components/ui/Reveal";
+import { cms } from "@/cms/mark";
 
 const SHADES = ["#232C27", "#26302A", "#29342D", "#2C3730"];
 
@@ -24,7 +25,7 @@ function Card({ e, i, total, progress }: { e: Experience; i: number; total: numb
         className="grid h-full origin-top overflow-hidden border border-ivory/10 md:grid-cols-[1.3fr_1fr]"
       >
         <div className="zoom-img relative min-h-[220px]">
-          <CmsImage image={e.image} alt="" fill sizes="(min-width:768px) 55vw, 100vw" className="object-cover" />
+          <CmsImage image={e.image} alt="" fill sizes="(min-width:768px) 55vw, 100vw" className="object-cover" cms={cms(e._id, "image")} />
         </div>
         <div className="flex flex-col justify-between gap-6 p-[clamp(24px,4vw,64px)]">
           <span className="font-serif text-lg text-bronze-light">
@@ -32,11 +33,13 @@ function Card({ e, i, total, progress }: { e: Experience; i: number; total: numb
           </span>
           <div>
             <h3 className="display mb-5 text-[clamp(32px,3.4vw,52px)] leading-[1.05]">
-              {e.title} <em>{e.italic}</em>
+              <span {...cms(e._id, "title")}>{e.title}</span> <em {...cms(e._id, "italic")}>{e.italic}</em>
             </h3>
-            <p className="text-[15px] leading-[1.9] text-ivory/70">{e.text}</p>
+            <p className="text-[15px] leading-[1.9] text-ivory/70" {...cms(e._id, "text")}>
+              {e.text}
+            </p>
           </div>
-          <Link href="/experiences" className="hlink eyebrow self-start text-ivory">
+          <Link href="/experiences" className="hlink eyebrow self-start text-ivory" {...cms(e._id, "cta")}>
             {e.cta}
           </Link>
         </div>
@@ -54,14 +57,17 @@ export default function Experiences({ section: head, items }: { section: HomePag
       <div className="mx-auto max-w-[1440px]">
         <div className="mb-[clamp(56px,7vw,96px)] grid items-end gap-12 md:grid-cols-2">
           <div>
-            <div className="eyebrow mb-5 text-bronze-light">{head.eyebrow}</div>
+            <div className="eyebrow mb-5 text-bronze-light" {...cms("homePage", "experiencesSection.eyebrow")}>
+              {head.eyebrow}
+            </div>
             <MaskText
               className="display text-[clamp(42px,5.4vw,84px)] leading-none"
               lines={titleLines(head.title)}
+              cms={cms("homePage", "experiencesSection.title")}
             />
           </div>
           <Reveal>
-            <p className="max-w-[460px] text-[15px] leading-[1.9] text-ivory/70">
+            <p className="max-w-[460px] text-[15px] leading-[1.9] text-ivory/70" {...cms("homePage", "experiencesSection.text")}>
               {head.text}
             </p>
           </Reveal>

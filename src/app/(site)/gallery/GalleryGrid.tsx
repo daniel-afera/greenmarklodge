@@ -5,6 +5,7 @@ import type { Img } from "@/content/types";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useState } from "react";
 import { EASE_LUXE, getLenis } from "@/lib/motion";
+import { cms } from "@/cms/mark";
 
 export default function GalleryGrid({ images: gallery }: { images: Img[] }) {
   const [open, setOpen] = useState<number | null>(null);
@@ -36,6 +37,7 @@ export default function GalleryGrid({ images: gallery }: { images: Img[] }) {
             type="button"
             onClick={() => setOpen(i)}
             data-cursor="View"
+            {...cms("galleryPage", "images")}
             aria-label={`Open image: ${g.alt}`}
             className="zoom-img relative mb-5 block w-full break-inside-avoid"
             initial={{ opacity: 0, y: 60, clipPath: "inset(12% 6% 12% 6%)" }}

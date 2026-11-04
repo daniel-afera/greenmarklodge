@@ -18,6 +18,7 @@ export default function ParallaxImage({
   amount = 10,
   reveal = true,
   priority = false,
+  cms,
 }: {
   image: Img;
   alt?: string;
@@ -26,6 +27,7 @@ export default function ParallaxImage({
   amount?: number;
   reveal?: boolean;
   priority?: boolean;
+  cms?: { "data-cms"?: string };
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
@@ -41,7 +43,7 @@ export default function ParallaxImage({
       transition={{ duration: 1.6, ease: EASE_LUXE }}
     >
       <motion.div className="absolute inset-0" style={{ y, scale: 1 + (amount * 2.2) / 100 }}>
-        <CmsImage image={image} alt={alt} fill sizes={sizes} priority={priority} className="object-cover" />
+        <CmsImage image={image} alt={alt} fill sizes={sizes} priority={priority} className="object-cover" cms={cms} />
       </motion.div>
     </motion.div>
   );

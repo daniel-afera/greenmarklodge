@@ -11,8 +11,9 @@ export default function CmsImage({
   fill,
   className = "",
   style,
+  cms,
   ...props
-}: { image: Img; alt?: string } & Omit<ImageProps, "src" | "alt" | "width" | "height" | "placeholder" | "blurDataURL">) {
+}: { image: Img; alt?: string; cms?: { "data-cms"?: string } } & Omit<ImageProps, "src" | "alt" | "width" | "height" | "placeholder" | "blurDataURL">) {
   const blur = image.blur ? { placeholder: "blur" as const, blurDataURL: image.blur } : {};
   return (
     <Image
@@ -22,6 +23,7 @@ export default function CmsImage({
       {...blur}
       className={className}
       style={{ objectPosition: image.position, ...style }}
+      {...cms}
       {...props}
     />
   );

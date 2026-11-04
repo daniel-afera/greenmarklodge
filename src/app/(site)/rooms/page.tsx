@@ -5,6 +5,7 @@ import CtaBand from "@/components/ui/CtaBand";
 import { getRooms, getRoomsPage } from "@/content";
 import { titleInline, titlePlain } from "@/lib/title";
 import RoomList from "./RoomList";
+import { cms } from "@/cms/mark";
 
 export async function generateMetadata(): Promise<Metadata> {
   const p = await getRoomsPage();
@@ -15,25 +16,31 @@ export default async function RoomsPage() {
   const [page, rooms] = await Promise.all([getRoomsPage(), getRooms()]);
   return (
     <>
-      <PageHero hero={page.hero} />
+      <PageHero hero={page.hero} doc="roomsPage" />
       <RoomList rooms={rooms} />
       {page.comforts.length > 0 && (
         <section className="bg-ink px-[clamp(20px,4vw,56px)] py-[clamp(80px,9vw,130px)] text-ivory">
           <div className="mx-auto max-w-[1440px]">
-            <div className="eyebrow mb-5 text-bronze-light">{page.comfortsEyebrow}</div>
-            <h2 className="display mb-16 text-[clamp(38px,4.4vw,68px)] leading-[1.05]">{titleInline(page.comfortsTitle)}</h2>
+            <div className="eyebrow mb-5 text-bronze-light" {...cms("roomsPage", "comfortsEyebrow")}>
+              {page.comfortsEyebrow}
+            </div>
+            <h2 className="display mb-16 text-[clamp(38px,4.4vw,68px)] leading-[1.05]" {...cms("roomsPage", "comfortsTitle")}>{titleInline(page.comfortsTitle)}</h2>
             <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
               {page.comforts.map((c, i) => (
                 <Reveal key={i} delay={i * 0.08} className="border-t border-ivory/20 pt-6">
-                  <div className="mb-2.5 font-serif text-[26px]">{c.title}</div>
-                  <p className="text-sm leading-[1.8] text-ivory/70">{c.text}</p>
+                  <div className="mb-2.5 font-serif text-[26px]" {...cms("roomsPage", `comforts.${i}.title`)}>
+                    {c.title}
+                  </div>
+                  <p className="text-sm leading-[1.8] text-ivory/70" {...cms("roomsPage", `comforts.${i}.text`)}>
+                    {c.text}
+                  </p>
                 </Reveal>
               ))}
             </div>
           </div>
         </section>
       )}
-      <CtaBand cta={page.cta} />
+      <CtaBand cta={page.cta} doc="roomsPage" />
     </>
   );
 }

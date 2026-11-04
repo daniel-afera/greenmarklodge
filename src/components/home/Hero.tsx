@@ -8,11 +8,14 @@ import { useRef, useState } from "react";
 import MaskText from "@/components/ui/MaskText";
 import BookingBar from "@/components/booking/BookingBar";
 import { EASE_LUXE, intro } from "@/lib/motion";
+import { cms } from "@/cms/mark";
+import { useSite } from "@/components/layout/SiteContext";
 
 export default function Hero({ hero, rooms }: { hero: HomePage["hero"]; rooms: RoomOption[] }) {
   const ref = useRef<HTMLElement>(null);
   // Wait for the preloader on first load; play quickly on client navigation.
-  const [base] = useState(() => (intro.played ? 0.45 : 2.05));
+  const { editing } = useSite();
+  const [base] = useState(() => (intro.played || editing ? 0.45 : 2.05));
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const imgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
   const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "-30%"]);
@@ -23,6 +26,7 @@ export default function Hero({ hero, rooms }: { hero: HomePage["hero"]; rooms: R
       <motion.div className="absolute inset-0" style={{ y: imgY }}>
         <CmsImage
           image={hero.image}
+          cms={cms("homePage", "hero.image")}
           fill
           priority
           sizes="100vw"
@@ -39,6 +43,7 @@ export default function Hero({ hero, rooms }: { hero: HomePage["hero"]; rooms: R
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, ease: EASE_LUXE, delay: base + 0.15 }}
+              {...cms("homePage", "hero.eyebrow")}
             >
               {hero.eyebrow}
             </motion.div>
@@ -49,6 +54,7 @@ export default function Hero({ hero, rooms }: { hero: HomePage["hero"]; rooms: R
               stagger={0.14}
               className="display text-[clamp(54px,8.4vw,136px)] leading-[0.94]"
               lines={titleLines(hero.title)}
+              cms={cms("homePage", "hero.title")}
             />
           </div>
           <motion.div

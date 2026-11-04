@@ -11,17 +11,20 @@ export default function Reveal({
   y = 50,
   className = "",
   as = "div",
+  cms,
 }: {
   children: ReactNode;
   delay?: number;
   y?: number;
   className?: string;
   as?: "div" | "li" | "section" | "article" | "p";
+  cms?: { "data-cms"?: string };
 }) {
   const Tag = motion[as];
   return (
     <Tag
       className={className}
+      {...cms}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "0px 0px -12% 0px" }}

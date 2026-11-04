@@ -7,6 +7,7 @@ import type { Room } from "@/content/types";
 import ParallaxImage from "@/components/ui/ParallaxImage";
 import ButtonLink from "@/components/ui/ButtonLink";
 import { EASE_LUXE } from "@/lib/motion";
+import { cms } from "@/cms/mark";
 
 const filters: { key: "all" | Room["category"]; label: string }[] = [
   { key: "all", label: "All residences" },
@@ -59,30 +60,36 @@ export default function RoomList({ rooms }: { rooms: Room[] }) {
               className={`flex flex-wrap items-center gap-[clamp(32px,5vw,80px)] ${i % 2 ? "flex-row-reverse" : ""}`}
             >
               <Link href={`/rooms/${r.slug}`} data-cursor="View" className="relative block min-w-0 flex-[999_1_520px]">
-                <ParallaxImage image={r.images[0]} sizes="(min-width:1024px) 58vw, 100vw" className="h-[clamp(360px,42vw,620px)]" amount={7} />
-                <span className="eyebrow absolute left-5 top-5 bg-ivory/90 px-3.5 py-2 text-[10px]">{r.tag}</span>
+                <ParallaxImage image={r.images[0]} cms={cms(r._id, "images")} sizes="(min-width:1024px) 58vw, 100vw" className="h-[clamp(360px,42vw,620px)]" amount={7} />
+                <span className="eyebrow absolute left-5 top-5 bg-ivory/90 px-3.5 py-2 text-[10px]" {...cms(r._id, "tag")}>
+                  {r.tag}
+                </span>
               </Link>
               <div className="flex min-w-0 flex-[1_1_360px] flex-col gap-7">
                 <span className="font-serif text-lg text-bronze-deep">{String(i + 1).padStart(2, "0")}</span>
-                <h2 className="display text-[clamp(40px,4vw,64px)] leading-none">{r.name}</h2>
-                <p className="text-[15px] leading-[1.9] text-muted">{r.description}</p>
+                <h2 className="display text-[clamp(40px,4vw,64px)] leading-none" {...cms(r._id, "name")}>
+                  {r.name}
+                </h2>
+                <p className="text-[15px] leading-[1.9] text-muted" {...cms(r._id, "description")}>
+                  {r.description}
+                </p>
                 <dl className="grid grid-cols-2 gap-x-6 gap-y-4 border-y border-ink/10 py-6 text-[13px] text-muted">
                   {[
-                    ["Bed", r.bed],
-                    ["View", r.view],
-                    ["Size", r.size],
-                    ["Guests", `Up to ${r.maxGuests} guests`],
-                  ].map(([k, v]) => (
+                    ["Bed", r.bed, "bed"],
+                    ["View", r.view, "view"],
+                    ["Size", r.size, "size"],
+                    ["Guests", `Up to ${r.maxGuests} guests`, "maxGuests"],
+                  ].map(([k, v, f]) => (
                     <div key={k}>
                       <dt className="eyebrow mb-1 text-[9px] text-bronze-deep">{k}</dt>
-                      <dd>{v}</dd>
+                      <dd {...cms(r._id, f)}>{v}</dd>
                     </div>
                   ))}
                 </dl>
                 <div className="flex flex-wrap items-center justify-between gap-6">
                   <div>
                     <div className="eyebrow text-[10px] text-muted">From</div>
-                    <div className="font-serif text-[34px]">
+                    <div className="font-serif text-[34px]" {...cms(r._id, "priceFrom")}>
                       {r.priceFrom} <span className="text-base text-muted">/ night</span>
                     </div>
                   </div>

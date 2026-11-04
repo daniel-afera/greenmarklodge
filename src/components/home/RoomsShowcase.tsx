@@ -10,6 +10,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import ButtonLink from "@/components/ui/ButtonLink";
 import MaskText from "@/components/ui/MaskText";
+import { cms } from "@/cms/mark";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -51,10 +52,13 @@ export default function RoomsShowcase({ section: head, rooms }: { section: HomeP
     <section ref={section} id="rooms" className="flex flex-col justify-center overflow-hidden bg-sand py-[clamp(96px,11vw,160px)] lg:h-svh lg:py-0">
       <div className="container-luxe flex flex-wrap items-end justify-between gap-8">
         <div>
-          <div className="eyebrow mb-5 text-bronze-deep">{head.eyebrow}</div>
+          <div className="eyebrow mb-5 text-bronze-deep" {...cms("homePage", "roomsSection.eyebrow")}>
+            {head.eyebrow}
+          </div>
           <MaskText
             className="display text-[clamp(42px,5.4vw,84px)] leading-none"
             lines={titleLines(head.title)}
+            cms={cms("homePage", "roomsSection.title")}
           />
         </div>
         <div className="flex items-center gap-8">
@@ -80,16 +84,22 @@ export default function RoomsShowcase({ section: head, rooms }: { section: HomeP
             className="group w-[clamp(290px,34vw,500px)] shrink-0 snap-start text-ink"
           >
             <div className="zoom-img relative h-[clamp(380px,40vw,560px)] lg:h-[min(56svh,560px)]">
-              <CmsImage image={r.images[0]} fill sizes="(min-width:1024px) 34vw, 85vw" className="object-cover" />
-              <span className="eyebrow absolute left-5 top-5 bg-ivory/90 px-3.5 py-2 text-[10px]">{r.tag}</span>
+              <CmsImage image={r.images[0]} fill sizes="(min-width:1024px) 34vw, 85vw" className="object-cover" cms={cms(r._id, "images")} />
+              <span className="eyebrow absolute left-5 top-5 bg-ivory/90 px-3.5 py-2 text-[10px]" {...cms(r._id, "tag")}>
+                {r.tag}
+              </span>
               <span className="absolute bottom-5 right-5 font-serif text-5xl font-light text-ivory/90">0{i + 1}</span>
             </div>
             <div className="mt-6 flex items-baseline justify-between gap-4">
-              <h3 className="font-serif text-[32px]">{r.name}</h3>
-              <span className="whitespace-nowrap text-xs text-muted">{r.view}</span>
+              <h3 className="font-serif text-[32px]" {...cms(r._id, "name")}>
+                {r.name}
+              </h3>
+              <span className="whitespace-nowrap text-xs text-muted" {...cms(r._id, "view")}>
+                {r.view}
+              </span>
             </div>
             <div className="mt-2 flex items-center justify-between text-[13px] text-muted">
-              <span>{r.short}</span>
+              <span {...cms(r._id, "short")}>{r.short}</span>
               <span className="eyebrow translate-y-2 text-[10px] text-bronze-deep opacity-0 transition-all duration-700 ease-[cubic-bezier(.19,1,.22,1)] group-hover:translate-y-0 group-hover:opacity-100">
                 Explore →
               </span>

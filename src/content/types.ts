@@ -34,7 +34,10 @@ export type SiteSettings = {
   shareImage?: Img;
 };
 
-export type Room = {
+/** Collection items read from the CMS carry their row id (for on-site editing). */
+type Item = { _id?: string };
+
+export type Room = Item & {
   slug: string;
   name: string;
   category: "suite" | "villa" | "room";
@@ -53,10 +56,10 @@ export type Room = {
 /** The subset the booking form + API need. */
 export type RoomOption = Pick<Room, "slug" | "name" | "maxGuests" | "bed" | "view" | "priceFrom"> & { image: Img };
 
-export type Experience = { title: string; italic: string; text: string; image: Img; cta: string };
-export type Venue = { name: string; kind: string; hours: string; text: string; image: Img };
-export type Treatment = { name: string; duration: string; text: string };
-export type Testimonial = { text: string; who: string };
+export type Experience = Item & { title: string; italic: string; text: string; image: Img; cta: string };
+export type Venue = Item & { name: string; kind: string; hours: string; text: string; image: Img };
+export type Treatment = Item & { name: string; duration: string; text: string };
+export type Testimonial = Item & { text: string; who: string };
 export type Feature = { title: string; text: string };
 export type Stat = { value: string; unit: string; label: string };
 export type SplitCard = { href: string; image: Img; eyebrow: string; title: Title; text: string; cta: string };

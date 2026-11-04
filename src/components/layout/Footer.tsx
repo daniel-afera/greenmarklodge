@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { SiteSettings } from "@/content/types";
 import { fullName, telHref, waHref } from "@/lib/site";
 import NewsletterForm from "./NewsletterForm";
+import { cms } from "@/cms/mark";
 
 const cols = [
   { label: "Stay", links: [["Rooms & Suites", "/rooms"], ["Book a stay", "/book"], ["Gallery", "/gallery"]] },
@@ -22,7 +23,7 @@ export default function Footer({ settings: s }: { settings: SiteSettings }) {
           </div>
           <div>
             <div className="eyebrow mb-5 text-bronze-light">Visit</div>
-            <address className="text-sm not-italic leading-8 text-ivory/70">
+            <address className="text-sm not-italic leading-8 text-ivory/70" {...cms("siteSettings", "address")}>
               {s.address.line1}
               <br />
               {s.address.line2}
@@ -33,14 +34,14 @@ export default function Footer({ settings: s }: { settings: SiteSettings }) {
           <div>
             <div className="eyebrow mb-5 text-bronze-light">Contact</div>
             <div className="flex flex-col text-sm leading-8 text-ivory/70">
-              <a className="hover:text-bronze-light" href={telHref(s.phone)}>
+              <a className="hover:text-bronze-light" href={telHref(s.phone)} {...cms("siteSettings", "phone")}>
                 {s.phone}
               </a>
-              <a className="hover:text-bronze-light" href={`mailto:${s.email}`}>
+              <a className="hover:text-bronze-light" href={`mailto:${s.email}`} {...cms("siteSettings", "email")}>
                 {s.email}
               </a>
               {s.whatsapp && (
-                <a className="hover:text-bronze-light" href={waHref(s.whatsapp)}>
+                <a className="hover:text-bronze-light" href={waHref(s.whatsapp)} {...cms("siteSettings", "whatsapp")}>
                   WhatsApp
                 </a>
               )}
@@ -60,7 +61,7 @@ export default function Footer({ settings: s }: { settings: SiteSettings }) {
             </nav>
           ))}
           {s.social.length > 0 && (
-            <nav aria-label="Social" className="flex flex-col">
+            <nav aria-label="Social" className="flex flex-col" {...cms("siteSettings", "social")}>
               <span className="eyebrow mb-4 text-ivory/40">Follow</span>
               {s.social.map((l) => (
                 <a key={l.label} href={l.href} target="_blank" rel="noreferrer" className="text-sm leading-[2.2] text-ivory/70 transition-colors hover:text-bronze-light">

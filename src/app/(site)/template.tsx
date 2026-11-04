@@ -6,7 +6,8 @@ import { useSite } from "@/components/layout/SiteContext";
 
 /** Runs on every navigation: an ink curtain wipes up, then the page fades in. */
 export default function Template({ children }: { children: React.ReactNode }) {
-  const { settings: site } = useSite();
+  const { settings: site, editing } = useSite();
+  if (editing) return <>{children}</>;
   return (
     <>
       <motion.div

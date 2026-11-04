@@ -9,6 +9,7 @@ import ButtonLink from "@/components/ui/ButtonLink";
 import MaskText from "@/components/ui/MaskText";
 import CmsImage from "@/components/ui/CmsImage";
 import { titleLines } from "@/lib/title";
+import { cms } from "@/cms/mark";
 
 export const dynamicParams = true;
 
@@ -35,12 +36,14 @@ export default async function RoomPage({ params }: PageProps<"/rooms/[slug]">) {
       <section className="container-luxe grid gap-16 py-[clamp(80px,10vw,150px)] lg:grid-cols-[1.4fr_1fr]">
         <div>
           <Reveal>
-            <p className="font-serif text-[clamp(28px,3vw,44px)] font-light leading-[1.3]">{room.description}</p>
+            <p className="font-serif text-[clamp(28px,3vw,44px)] font-light leading-[1.3]" {...cms(room._id, "description")}>
+              {room.description}
+            </p>
           </Reveal>
           {room.amenities.length > 0 && (
             <Reveal delay={0.1}>
               <h2 className="eyebrow mb-6 mt-16 text-bronze-deep">Amenities</h2>
-              <ul className="grid gap-x-10 sm:grid-cols-2">
+              <ul className="grid gap-x-10 sm:grid-cols-2" {...cms(room._id, "amenities")}>
                 {room.amenities.map((a) => (
                   <li key={a} className="flex items-center gap-4 border-b border-ink/10 py-4 text-[15px]">
                     <span className="h-1.5 w-1.5 rotate-45 bg-bronze" aria-hidden="true" />
@@ -55,19 +58,19 @@ export default async function RoomPage({ params }: PageProps<"/rooms/[slug]">) {
         <aside className="lg:sticky lg:top-28 lg:self-start">
           <Reveal className="border border-ink/15 bg-sand/60 p-[clamp(28px,3vw,44px)]">
             <div className="eyebrow mb-1 text-[10px] text-muted">From</div>
-            <div className="mb-8 font-serif text-[44px] leading-none">
+            <div className="mb-8 font-serif text-[44px] leading-none" {...cms(room._id, "priceFrom")}>
               {room.priceFrom} <span className="text-base text-muted">/ night</span>
             </div>
             <dl className="mb-10 grid grid-cols-2 gap-5 text-sm">
               {[
-                ["Bed", room.bed],
-                ["View", room.view],
-                ["Size", room.size],
-                ["Guests", `Up to ${room.maxGuests}`],
-              ].map(([k, v]) => (
+                ["Bed", room.bed, "bed"],
+                ["View", room.view, "view"],
+                ["Size", room.size, "size"],
+                ["Guests", `Up to ${room.maxGuests}`, "maxGuests"],
+              ].map(([k, v, f]) => (
                 <div key={k}>
                   <dt className="eyebrow mb-1 text-[9px] text-bronze-deep">{k}</dt>
-                  <dd>{v}</dd>
+                  <dd {...cms(room._id, f)}>{v}</dd>
                 </div>
               ))}
             </dl>
@@ -81,8 +84,8 @@ export default async function RoomPage({ params }: PageProps<"/rooms/[slug]">) {
 
       {extra.length > 0 && (
         <section className="container-luxe grid grid-cols-12 gap-6 pb-[clamp(80px,10vw,150px)]">
-          <ParallaxImage image={extra[0]} sizes="60vw" className={`col-span-12 h-[clamp(320px,40vw,600px)] ${extra[1] ? "md:col-span-7" : ""}`} />
-          {extra[1] && <ParallaxImage image={extra[1]} sizes="40vw" className="col-span-12 h-[clamp(320px,40vw,600px)] md:col-span-5 md:mt-24" />}
+          <ParallaxImage image={extra[0]} cms={cms(room._id, "images")} sizes="60vw" className={`col-span-12 h-[clamp(320px,40vw,600px)] ${extra[1] ? "md:col-span-7" : ""}`} />
+          {extra[1] && <ParallaxImage image={extra[1]} cms={cms(room._id, "images")} sizes="40vw" className="col-span-12 h-[clamp(320px,40vw,600px)] md:col-span-5 md:mt-24" />}
         </section>
       )}
 

@@ -1,0 +1,33 @@
+import { expect, test } from "@playwright/test";
+
+const PAGES = ["/", "/rooms", "/rooms/garden-villa", "/dining", "/spa", "/experiences", "/gallery", "/contact", "/book"];
+
+for (const path of PAGES) {
+  test(`${path} renders without errors`, async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
+    const res = await page.goto(path);
+    expect(res?.status()).toBe(200);
+    await expect(page.locator("h1").first()).toBeVisible({ timeout: 20_000 });
+    // Images come from Supabase storage (or the built-in fallback) and load.
+    const broken = await page.locator("img").evaluateAll((imgs) =>
+      (imgs as HTMLImageElement[]).filter((i) => i.complete && i.loading !== "lazy" && i.naturalWidth === 0).map((i) => i.src),
+    );
+    expect(broken).toEqual([]);
+    expect(errors).toEqual([]);
+  });
+}
+
+test("menu opens and navigates", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open menu" }).click();
+  await page.getByRole("link", { name: "Dining" }).first().click();
+  await expect(page).toHaveURL(/\/dining$/);
+  await expect(page.locator("h1")).toBeVisible();
+});
+
+test("404 page", async ({ page }) => {
+  const res = await page.goto("/no-such-page");
+  expect(res?.status()).toBe(404);
+});
