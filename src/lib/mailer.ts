@@ -42,8 +42,8 @@ export function getMailer(): Promise<Mailer> {
   return cached;
 }
 
-export const mailFrom = () => process.env.MAIL_FROM ?? '"Aberash Lodge" <reservations@aberashlodge.com>';
-export const receptionEmail = () => process.env.RECEPTION_EMAIL ?? "reception@aberashlodge.com";
+export const mailFrom = () => process.env.MAIL_FROM ?? '"Green Mark Lodge" <reservations@greenmarklodge.com>';
+export const receptionEmail = () => process.env.RECEPTION_EMAIL ?? "reception@greenmarklodge.com";
 
 export async function send(opts: SendMailOptions) {
   const { transporter, isTest } = await getMailer();

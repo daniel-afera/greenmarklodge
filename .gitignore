@@ -45,3 +45,6 @@ next-env.d.ts
 /tests/.auth/
 /test-results/
 /playwright-report/
+
+# client originals (large; kept local only)
+/client-assets/

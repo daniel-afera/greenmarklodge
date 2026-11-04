@@ -9,6 +9,7 @@ import type { Img } from "@/content/types";
 import { uploadPhoto } from "@/cms/upload";
 import { AltInput, FocalPreview } from "./ImageField";
 import { MiniButton } from "./inputs";
+import MediaPicker from "./MediaPicker";
 
 const ACCEPT = "image/jpeg,image/png,image/webp,image/avif,image/heic,image/heif,.heic,.heif";
 
@@ -41,6 +42,7 @@ export default function GalleryField({ label, value, onChange, max = 100, error 
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [problems, setProblems] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
+  const [picking, setPicking] = useState(false);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
   const onFiles = async (files: File[]) => {
     const room = Math.max(0, max - value.length);
@@ -79,10 +81,27 @@ export default function GalleryField({ label, value, onChange, max = 100, error 
         <span className="text-[10px] font-medium uppercase tracking-[0.28em] text-muted">
           {label} · {value.length}
         </span>
-        <MiniButton onClick={() => input.current?.click()} disabled={!!progress || value.length >= max}>
-          {progress ? `Uploading ${progress.done + 1 > progress.total ? progress.total : progress.done + 1} of ${progress.total}…` : "Add photos"}
-        </MiniButton>
+        <div className="flex flex-wrap justify-end gap-5">
+          <MiniButton onClick={() => setPicking(true)} disabled={!!progress || value.length >= max}>
+            Choose from library
+          </MiniButton>
+          <MiniButton onClick={() => input.current?.click()} disabled={!!progress || value.length >= max}>
+            {progress ? `Uploading ${progress.done + 1 > progress.total ? progress.total : progress.done + 1} of ${progress.total}…` : "Add photos"}
+          </MiniButton>
+        </div>
       </div>
+      {picking && (
+        <MediaPicker
+          multiple
+          exclude={value.map((i) => i.src)}
+          onClose={() => setPicking(false)}
+          onPick={(imgs) => {
+            const room = Math.max(0, max - value.length);
+            if (imgs.length > room) setProblems([`Only ${room} more photo(s) fit here.`]);
+            onChange([...value, ...imgs.slice(0, room)]);
+          }}
+        />
+      )}
       <input
         ref={input}
         type="file"

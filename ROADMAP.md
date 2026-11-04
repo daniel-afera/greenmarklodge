@@ -1,10 +1,10 @@
-# Aberash Lodge — Roadmap
+# Green Mark Lodge — Roadmap
 
 How to pick this project up in a new chat: read this file, `README.md` and `AGENTS.md`, then continue from **Next up**.
 
 ## Where things stand (Nov 2026)
 
-The website is done and pushed to `github.com/KalabGebru/aberash-lodge` (private, `main`). Aberash is a placeholder name; real content comes from the client later.
+The website is done and pushed to `github.com/KalabGebru/aberash-lodge` (private, `main`). The client is **Green Mark Lodge** (name, logo and photos received 4 Nov 2026). The other copy — location, prices, reviews, contact details — is still placeholder.
 
 - **Stack:**
   - Next.js 16.4 (App Router, Turbopack), Tailwind 4, Motion 14, GSAP + ScrollTrigger, Lenis
@@ -22,7 +22,7 @@ The website is done and pushed to `github.com/KalabGebru/aberash-lodge` (private
   - Supabase project `ieuygasvvzgtsizjsfro`, region eu-west-1 (Ireland). Scripts connect through the session pooler `aws-0-eu-west-1.pooler.supabase.com`, because the direct DB host is IPv6-only and this machine has no IPv6.
   - Keys live in `.env`, not `.env.local`. Scripts: `npm run migrate | seed | create-owner | test:e2e`.
   - Pages read content through `src/content/index.ts` → `src/cms/db.ts`. Published content is cached with the tag `content`. Edit mode (draft mode plus a signed-in staff member) reads drafts. With no config or on errors, the built-in `src/content/fallback.ts` is used.
-  - `/admin`: login, a forced password change, sidebar dashboard, autosaving forms built from `src/cms/fields.ts`, Publish / Publish all, sortable lists, staff management (owner only).
+  - `/admin`: login, a forced password change, sidebar dashboard, autosaving forms built from `src/cms/fields.ts`, Publish / Publish all, sortable lists, staff management (owner only), and a **Photos** page (`/admin/media`): storage used vs the 1 GB free limit, every file with where it's used (published or draft), filter by unused, owner-only delete (usage re-checked on the server). Photo fields have **Choose from library** (`MediaPicker.tsx`) to reuse a stored photo.
   - On-site editing: elements carry `data-cms="doc:path"` (via `cms()` in `src/cms/mark.ts`). `EditMode.tsx` is mounted only in edit mode; it draws the hover outline, opens popovers (reusing the admin `FieldView`), and has the edit bar.
   - Photos are shrunk in the browser (`src/cms/image-prep.ts`) and uploaded with signed URLs (`src/cms/upload.ts`).
   - **Titles:** use `/` for a new line and `*italic*`; rendered by `src/lib/title.tsx`.
@@ -31,9 +31,12 @@ The website is done and pushed to `github.com/KalabGebru/aberash-lodge` (private
 
 ## Next up
 
-- [ ] **User:** reset the Supabase database password (part of it was shown in the chat on 4 Nov), then update `SUPABASE_DB_PASSWORD` in `.env`.
-- [ ] **User:** create the first owner account. Run `npm run create-owner -- <email> "<name>"` in your own terminal, sign in at `/admin/login` and choose a password.
-- [ ] **Real content:** enter it through the editor (see **Later**).
+- [x] **User:** reset the Supabase database password. Done 4 Nov 2026; the new password works for scripts.
+- [x] **User:** create the first owner account. Done 4 Nov 2026: one owner (password set) and one editor (still on a temporary password).
+- [x] **Client name, logo and photos** (4 Nov 2026): name "Green Mark Lodge"; round logo in the header, menu, preloader and app icons; 44 of the client's 108 photos on the site (`public/images/*.webp`), Supabase re-seeded.
+  - Originals live in `client-assets/` (git-ignored, this machine only). `npm run photos` converts them to WebP (HEIC via `heic-convert`) into `client-assets/converted/` with contact sheets; `npm run photos -- --logo` rebuilds `public/logo.webp`, `src/app/icon.png` and `src/app/apple-icon.png`.
+  - No spa, pool, lake or coffee-ceremony photos were supplied: those spots use garden photos for now, and the copy still describes them. Room names and descriptions are placeholders; the four rooms map to the real room types (king room, round cottage, standard double, apartment). A fifth type (wooden-floor room, IMG_3719–3721) is only in the gallery.
+- [ ] **Real content:** the rest of the text through the editor (see **Later**).
 
 ### How the editor differs from the original plan
 
@@ -45,14 +48,14 @@ The website is done and pushed to `github.com/KalabGebru/aberash-lodge` (private
 ### Editor follow-ups (optional)
 
 - [ ] Deleting a list item or reordering takes effect immediately (no draft step). Add an "undo" or a soft delete if that turns out to be risky.
-- [ ] Replaced or removed photos stay in the `media` bucket. Add a cleanup script for unreferenced `uploads/*` files.
+- [x] Replaced or removed photos stay in the `media` bucket. Owners now delete unused ones on the Photos page (5 Nov 2026).
 - [ ] No database backups on the free plan. Add a weekly `content` export, or upgrade to Pro.
 - [ ] Two rooms could end up with the same web address (`slug`). Add a uniqueness check on publish.
 - [ ] Use a Supabase table for the booking rate limit (from the audit).
 
 ## Later (before launch)
 
-- [ ] **Real content:** swap in the client's name, text, prices (`[RATE]`), sizes (`[SIZE]`), residence count (`[00]`), reviews (`[Guest name]`), phone and email, and their own photos, through `/admin` or edit mode. The current photos are Unsplash placeholders. Optionally update `src/content/fallback.ts` too, since it's the fallback.
+- [ ] **Real content:** swap in the client's name, text, prices (`[RATE]`), sizes (`[SIZE]`), residence count (`[00]`), reviews (`[Guest name]`), phone and email, through `/admin` or edit mode. (Name, logo and photos are done.) Optionally update `src/content/fallback.ts` too, since it's the fallback.
 - [ ] **Site improvements from the audit:** do these after the real content is in (see **Site audit** below).
 - [ ] **Real email:** fill `SMTP_*`, `MAIL_FROM` and `RECEPTION_EMAIL` in `.env` and on Vercel. For Gmail, use an App Password.
 - [ ] **Deploy:** Vercel project → env vars (Supabase URL, publishable and secret keys, `CRON_SECRET`; not the DB password) → custom domain → set `NEXT_PUBLIC_SITE_URL`. Set the function region to Dublin (`dub1`) to sit next to the eu-west-1 database.
@@ -115,6 +118,10 @@ CHROME_PATH=~/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome \
 
 ## Gotchas learned so far
 
+- **No native browser UI.** Never use `window.confirm/alert/prompt` or `<select>`. Confirmations use `useConfirm()` (`src/components/ui/useConfirm.tsx`); dropdowns use `Select` (`src/components/forms/Select.tsx`), or in the admin `SelectInput` / `MiniSelect` (`src/components/admin/inputs.tsx`). Escape always closes the newest open layer (`useEscape` in `src/components/forms/hooks.ts`).
+
+- **Thumbnails can stall the server.** `next/image` resizing (sharp) runs on Node's libuv pool, which also does the DNS lookups for every Supabase call. With the default 4 threads, a page full of fresh thumbnails (the Photos page) made saves and refreshes take 20+ s. `npm run dev`, `npm start` and the Playwright server set `UV_THREADPOOL_SIZE=16`. Vercel optimises images on its own service, so production isn't affected.
+
 - **Next 16 differs from older versions.** Read `node_modules/next/dist/docs/` before using an API (see `AGENTS.md`). Middleware is now `proxy.ts`, `revalidateTag` needs a second argument, and `PageProps<"/route">` / `LayoutProps` are generated globals.
 - **`cacheComponents` is off on purpose.** It keeps old pages mounted in the background, which clashes with Lenis and GSAP.
 - **Memory:** the machine has about 7.7 GB of RAM. Heavy builds alongside VS Code got killed (exit 137). Run type check, lint and build one at a time. Stop stray `next start` / `next dev` processes by PID; `pkill -f` patterns can kill the shell running them.
@@ -132,5 +139,6 @@ npm run build          # production build
 npm run migrate        # apply supabase/migrations (needs SUPABASE_DB_PASSWORD)
 npm run seed           # built-in content + images → Supabase (--overwrite to replace)
 npm run create-owner -- <email> "<name>"
+npm run photos         # client-assets/photos → WebP (+ -- --logo for the logo/icons)
 npm run test:e2e       # Playwright (after npm run build)
 ```

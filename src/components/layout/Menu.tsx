@@ -6,7 +6,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { EASE_CURTAIN, EASE_LUXE, getLenis } from "@/lib/motion";
-import { nav } from "@/lib/site";
+import Logo from "@/components/ui/Logo";
+import { fullName, nav } from "@/lib/site";
 import { useSite } from "./SiteContext";
 
 export default function Menu({ onClose }: { onClose: () => void }) {
@@ -49,7 +50,7 @@ export default function Menu({ onClose }: { onClose: () => void }) {
           </svg>
           Close
         </button>
-        <span className="pl-[0.42em] font-serif text-[22px] uppercase tracking-[0.42em] sm:text-[26px]">{site.name}</span>
+        <Logo size={56} alt={fullName(site)} className="size-12 sm:size-14" />
         <Link href="/book" onClick={onClose} className="btn btn-light !min-h-11 !px-5">
           <span>Reserve</span>
         </Link>

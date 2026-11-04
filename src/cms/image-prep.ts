@@ -57,6 +57,29 @@ const blobToDataUrl = (blob: Blob) =>
     r.readAsDataURL(blob);
   });
 
+/** Size + blur preview of a photo already in storage (picked from the library). */
+export async function describeStored(url: string): Promise<{ width: number; height: number; blur?: string }> {
+  const img = new Image();
+  img.crossOrigin = "anonymous"; // storage sends CORS headers; needed to read pixels for the blur
+  img.src = url;
+  await img.decode().catch(() => {
+    throw new ImagePrepError("This photo couldn't be loaded.");
+  });
+  const width = img.naturalWidth;
+  const height = img.naturalHeight;
+  try {
+    const bs = 16 / Math.max(width, height);
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(width * bs));
+    canvas.height = Math.max(1, Math.round(height * bs));
+    canvas.getContext("2d")?.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const blur = canvas.toDataURL("image/webp", 0.5);
+    return { width, height, ...(blur.startsWith("data:image/") ? { blur } : {}) };
+  } catch {
+    return { width, height }; // blur is optional
+  }
+}
+
 export async function prepareImage(file: File): Promise<PreparedImage> {
   if (!file.type.startsWith("image/") && !isHeic(file)) throw new ImagePrepError("Please choose a photo (JPG, PNG, WebP or HEIC).");
   if (file.size > MAX_INPUT) throw new ImagePrepError("This photo is too large (over 40 MB).");

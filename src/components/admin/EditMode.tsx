@@ -8,6 +8,7 @@ import { setIn } from "@/cms/paths";
 import { useDismiss } from "@/components/forms/hooks";
 import { getLenis } from "@/lib/motion";
 import { FieldView } from "./DocForm";
+import { useConfirm } from "@/components/ui/useConfirm";
 
 /**
  * On-site edit mode (mounted by the site layout only for signed-in staff in
@@ -145,6 +146,7 @@ export default function EditMode({ unpublished }: { unpublished: number }) {
   const [hover, setHover] = useState<{ rect: DOMRect; label: string } | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [busy, start] = useTransition();
+  const [ask, confirmDialog] = useConfirm();
   const raf = useRef(0);
 
   // Hover outline + click-to-edit (capture phase, so links and buttons don't fire).
@@ -228,7 +230,7 @@ export default function EditMode({ unpublished }: { unpublished: number }) {
             {preview ? "Edit" : "Preview"}
           </button>
           {unpublished > 0 && (
-            <button type="button" disabled={busy} onClick={() => confirm("Discard all unpublished changes?") && run(discardAll, "Changes discarded")} className="text-champagne hover:text-ivory">
+            <button type="button" disabled={busy} onClick={async () => (await ask({ title: "Discard all unpublished changes?", message: "Every page goes back to what's live. New items that were never published are kept.", confirmLabel: "Discard", danger: true })) && run(discardAll, "Changes discarded")} className="text-champagne hover:text-ivory">
               Discard
             </button>
           )}
@@ -243,6 +245,7 @@ export default function EditMode({ unpublished }: { unpublished: number }) {
           </a>
         </div>
       </div>
+      {confirmDialog}
       {!preview && <p className="sr-only">Edit mode: click any outlined text or photo to change it. Hold Alt (Option) and click to follow a link.</p>}
     </>
   );

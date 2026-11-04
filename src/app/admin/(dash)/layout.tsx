@@ -18,6 +18,7 @@ export default async function DashLayout({ children }: LayoutProps<"/admin">) {
     { href: "/admin/pages", label: "Pages", count: countWhere((r) => PAGE_IDS.includes(r.id)) },
     ...LIST_ORDER.map((t) => ({ href: `/admin/list/${t}`, label: collections[t].label, count: countWhere((r) => r.type === t) })),
     { href: "/admin/edit/galleryPage", label: "Gallery", count: countWhere((r) => r.id === "galleryPage") },
+    { href: "/admin/media", label: "Photos" },
     { href: "/admin/edit/siteSettings", label: "Settings", count: countWhere((r) => r.id === "siteSettings") },
     ...(staff.role === "owner" ? [{ href: "/admin/staff", label: "Staff" }] : []),
   ];

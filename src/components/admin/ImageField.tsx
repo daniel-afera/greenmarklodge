@@ -5,6 +5,7 @@ import { useId, useRef, useState } from "react";
 import type { Img } from "@/content/types";
 import { uploadPhoto } from "@/cms/upload";
 import { MiniButton } from "./inputs";
+import MediaPicker from "./MediaPicker";
 
 const ACCEPT = "image/jpeg,image/png,image/webp,image/avif,image/heic,image/heif,.heic,.heif";
 
@@ -97,6 +98,12 @@ export default function ImageField({
   error?: string;
 }) {
   const up = useUpload(onChange, value ?? undefined);
+  const [picking, setPicking] = useState(false);
+  const library = (
+    <MiniButton onClick={() => setPicking(true)} disabled={up.busy}>
+      Choose from library
+    </MiniButton>
+  );
   return (
     <div className="flex flex-col gap-3">
       <span className="text-[10px] font-medium uppercase tracking-[0.28em] text-muted">{label}</span>
@@ -110,6 +117,7 @@ export default function ImageField({
               <MiniButton onClick={up.open} disabled={up.busy}>
                 {up.busy ? "Uploading…" : "Replace photo"}
               </MiniButton>
+              {library}
               {optional && (
                 <MiniButton danger onClick={() => onChange(null)}>
                   Remove
@@ -119,11 +127,21 @@ export default function ImageField({
           </div>
         </div>
       ) : (
-        <button type="button" onClick={up.open} disabled={up.busy} className="flex h-36 items-center justify-center border border-dashed border-ink/30 text-sm text-muted hover:border-bronze">
-          {up.busy ? "Uploading…" : "Upload a photo"}
-        </button>
+        <div className="flex flex-col gap-3">
+          <button type="button" onClick={up.open} disabled={up.busy} className="flex h-36 items-center justify-center border border-dashed border-ink/30 text-sm text-muted hover:border-bronze">
+            {up.busy ? "Uploading…" : "Upload a photo"}
+          </button>
+          <div>{library}</div>
+        </div>
       )}
       {up.input}
+      {picking && (
+        <MediaPicker
+          onClose={() => setPicking(false)}
+          // A library photo brings its own description if it has one; otherwise keep the current one.
+          onPick={([img]) => onChange({ ...img, alt: img.alt || value?.alt || "" })}
+        />
+      )}
       {(up.error || error) && (
         <em role="alert" className="text-xs not-italic text-error">
           {up.error || error}

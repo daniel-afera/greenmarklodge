@@ -25,6 +25,9 @@ export default defineConfig({
   webServer: {
     command: `npx next start -p ${PORT}`,
     port: PORT,
+    // More libuv threads: image resizing (sharp) shares Node's pool with the DNS
+    // lookups for Supabase calls; with the default 4, saves stall behind thumbnails.
+    env: { UV_THREADPOOL_SIZE: "16" },
     reuseExistingServer: false,
     timeout: 60_000,
   },

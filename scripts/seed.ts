@@ -103,7 +103,25 @@ async function main() {
     .select("id");
   if (error) throw new Error(error.message);
   console.log(`  ${data.length} written, ${rows.length - data.length} already existed.`);
+  await clearSiteCache();
   console.log("Done.");
+}
+
+/**
+ * The site caches published content until something publishes. Writing to
+ * the database directly doesn't, so ask the running site to drop its cache.
+ * SITE_URL overrides the target (e.g. the live site after a deploy).
+ */
+async function clearSiteCache() {
+  const site = process.env.SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  try {
+    const res = await fetch(new URL("/api/revalidate", site), { method: "POST", headers: { authorization: `Bearer ${key}` } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    console.log(`Site cache cleared (${site}).`);
+  } catch (err) {
+    console.log(`Couldn't clear the site cache at ${site} (${err instanceof Error ? err.message : err}).`);
+    console.log("  If the site is running, it may show old content until something is published — or restart it after deleting .next/cache.");
+  }
 }
 
 main().catch((err) => {

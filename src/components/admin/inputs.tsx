@@ -2,6 +2,7 @@
 
 import { useId, useRef } from "react";
 import Field from "@/components/forms/Field";
+import Select from "@/components/forms/Select";
 import { TITLE_HINT } from "@/cms/fields";
 
 type Base = { label: string; error?: string; hint?: string };
@@ -72,18 +73,50 @@ export function NumberInput({ label, value, onChange, min, max, error }: Base & 
   );
 }
 
+/** Trigger look shared by every custom dropdown in the admin (matches .field inputs). */
+export const SELECT_TRIGGER = "min-h-12 border-b border-ink/28 py-3 text-base hover:border-ink/60 aria-expanded:border-bronze aria-[invalid=true]:border-error";
+
 export function SelectInput({ label, value, onChange, options, error }: Base & { value: string; onChange: (v: string) => void; options: { value: string; label: string }[] }) {
   const id = useId();
   return (
     <Field id={id} label={label} error={error}>
-      <select id={id} value={value} onChange={(e) => onChange(e.target.value)}>
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
+      <Select id={id} labelledBy={`${id}-label`} value={value} onChange={onChange} options={options} invalid={!!error} triggerClassName={SELECT_TRIGGER} />
     </Field>
+  );
+}
+
+/** Compact dropdown for toolbars (sort, filter, role). */
+export function MiniSelect({
+  label,
+  value,
+  onChange,
+  options,
+  disabled,
+  align = "right",
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+  disabled?: boolean;
+  align?: "left" | "right";
+}) {
+  const id = useId();
+  return (
+    <div className={`flex items-center gap-2 text-xs text-muted ${disabled ? "pointer-events-none opacity-50" : ""}`}>
+      <span id={`${id}-label`}>{label}</span>
+      <Select
+        id={id}
+        labelledBy={`${id}-label`}
+        value={value}
+        onChange={onChange}
+        options={options}
+        align={align}
+        className="text-ink"
+        triggerClassName="min-h-9 gap-2 border-b border-ink/25 py-1 text-sm hover:border-ink/60 aria-expanded:border-bronze"
+        menuClassName="min-w-[200px]"
+      />
+    </div>
   );
 }
 

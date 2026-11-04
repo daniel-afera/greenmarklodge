@@ -41,6 +41,40 @@ test("sign in → edit the home title → publish → a visitor sees it", async 
   }
 });
 
+test("autosave keeps focus and keeps a just-added empty entry", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "Writes a draft; run once.");
+  const db = admin();
+  const { data: before } = await db.from("content").select("draft").eq("id", "homePage").single();
+  const saved = page.getByRole("status").filter({ hasText: /^Saved/ });
+
+  try {
+    await signIn(page);
+    await page.goto("/admin/edit/homePage");
+
+    // Typing across an autosave: the cursor stays in the field and nothing is lost.
+    const field = page.getByRole("group", { name: "Header" }).getByLabel("Small heading", { exact: true });
+    await field.fill("Before save");
+    await expect(saved).toBeVisible();
+    await expect(field).toBeFocused();
+    await page.keyboard.type(" and after");
+    await expect(field).toHaveValue("Before save and after");
+
+    // A new empty entry gets focus and survives the autosave.
+    const words = page.getByRole("group", { name: "Scrolling words" });
+    const count = await words.getByRole("textbox").count();
+    await words.getByRole("button", { name: "+ Add word" }).click();
+    const added = words.getByLabel(`Word ${count + 1}`, { exact: true });
+    await expect(added).toBeFocused();
+    await expect(page.getByRole("status").filter({ hasText: "Saving…" })).toBeHidden();
+    await expect(saved).toBeVisible();
+    await page.waitForTimeout(500);
+    await expect(added).toBeVisible();
+    await expect(added).toBeFocused();
+  } finally {
+    await db.from("content").update({ draft: before?.draft ?? null }).eq("id", "homePage");
+  }
+});
+
 test("lists: add, reorder and delete a review", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "Run once.");
   await signIn(page);
@@ -58,11 +92,45 @@ test("lists: add, reorder and delete a review", async ({ page }, info) => {
   await expect(page.getByText("E2E Guest")).toBeVisible();
   await expect(page.locator("main li").last()).toContainText("Not published yet");
 
-  page.once("dialog", (d) => d.accept());
   await page.locator("main li").filter({ hasText: "E2E Guest" }).getByRole("button", { name: "Delete" }).click();
+  await page.getByRole("alertdialog", { name: /Delete “E2E Guest”/ }).getByRole("button", { name: "Delete" }).click();
   await expect(page.getByText("E2E Guest")).toHaveCount(0);
   const { data } = await admin().from("content").select("id").eq("id", id);
   expect(data).toHaveLength(0);
+});
+
+test("custom dropdown: pick a room category with the keyboard; Escape closes only the dropdown", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "Writes a draft; run once.");
+  const db = admin();
+  const id = "room-garden-villa";
+  const { data: before } = await db.from("content").select("draft").eq("id", id).single();
+  try {
+    await signIn(page);
+    await page.goto(`/admin/edit/${id}`);
+    const category = page.getByRole("combobox", { name: /Category/ });
+    await expect(category).toContainText("Villa");
+    await expect(page.locator("main select")).toHaveCount(0); // no native dropdowns
+
+    // Escape closes the list without leaving the page or changing anything.
+    await category.click();
+    await expect(page.getByRole("listbox")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("listbox")).toBeHidden();
+    await expect(category).toContainText("Villa");
+
+    // Keyboard: open, move to "Suite", pick.
+    await category.focus();
+    await page.keyboard.press("ArrowDown"); // opens on the current choice (Villa)
+    await expect(page.getByRole("listbox")).toBeVisible();
+    await page.keyboard.press("ArrowUp"); // Suite is listed first
+    await page.keyboard.press("Enter");
+    await expect(category).toContainText("Suite");
+    await expect(page.getByRole("status").filter({ hasText: /^Saved/ })).toBeVisible();
+    const { data } = await db.from("content").select("draft").eq("id", id).single();
+    expect((data?.draft as { category: string }).category).toBe("suite");
+  } finally {
+    await db.from("content").update({ draft: before?.draft ?? null }).eq("id", id);
+  }
 });
 
 test("staff page is visible to owners", async ({ page }, info) => {

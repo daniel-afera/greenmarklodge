@@ -9,6 +9,7 @@ import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, v
 import { CSS } from "@dnd-kit/utilities";
 import { createItem, deleteItem, reorder } from "@/cms/actions";
 import type { Img } from "@/content/types";
+import { useConfirm } from "@/components/ui/useConfirm";
 
 export type ListItem = { id: string; title: string; image?: Img; status: "published" | "changed" | "new" };
 
@@ -40,6 +41,7 @@ export default function CollectionList({ type, singular, items: initial }: { typ
   const [items, setItems] = useState(initial);
   const [error, setError] = useState<string | null>(null);
   const [busy, start] = useTransition();
+  const [ask, confirmDialog] = useConfirm();
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
   const onDragEnd = ({ active, over }: DragEndEvent) => {
@@ -59,8 +61,8 @@ export default function CollectionList({ type, singular, items: initial }: { typ
       else setError(res.error);
     });
 
-  const remove = (item: ListItem) => {
-    if (!confirm(`Delete “${item.title}”? It disappears from the site immediately.`)) return;
+  const remove = async (item: ListItem) => {
+    if (!(await ask({ title: `Delete “${item.title}”?`, message: "It disappears from the site immediately. This can't be undone.", confirmLabel: "Delete", danger: true }))) return;
     start(async () => {
       const res = await deleteItem(item.id);
       if (res.ok) setItems((list) => list.filter((i) => i.id !== item.id));
@@ -85,11 +87,12 @@ export default function CollectionList({ type, singular, items: initial }: { typ
         <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
           <ul className="border-t border-ink/10">
             {items.map((item) => (
-              <Row key={item.id} item={item} busy={busy} onDelete={() => remove(item)} />
+              <Row key={item.id} item={item} busy={busy} onDelete={() => void remove(item)} />
             ))}
           </ul>
         </SortableContext>
       </DndContext>
+      {confirmDialog}
       {!items.length && <p className="py-10 text-center text-muted">Nothing here yet. While the list is empty, the site shows the built-in placeholder content.</p>}
     </div>
   );

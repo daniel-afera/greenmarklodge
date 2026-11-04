@@ -1,7 +1,10 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useId, useState, useTransition } from "react";
+import Select from "@/components/forms/Select";
+import { MiniSelect, SELECT_TRIGGER } from "./inputs";
 import type { Role } from "@/cms/auth";
+import { useConfirm } from "@/components/ui/useConfirm";
 import { addStaff, removeStaff, resetStaffPassword, setRole, type FormState } from "@/cms/staff-actions";
 
 export type StaffRow = { id: string; name: string; email: string; role: Role; lastSignIn: string | null; pending: boolean; isMe: boolean };
@@ -20,14 +23,21 @@ function TempPassword({ state }: { state: FormState }) {
   );
 }
 
+const ROLES = [
+  { value: "editor", label: "Editor" },
+  { value: "owner", label: "Owner" },
+];
+
 export default function StaffManager({ rows }: { rows: StaffRow[] }) {
   const [added, addAction, adding] = useActionState(addStaff, undefined);
   const [result, setResult] = useState<FormState>(undefined);
   const [busy, start] = useTransition();
+  const [ask, confirmDialog] = useConfirm();
   const run = (fn: () => Promise<FormState>) => start(async () => setResult(await fn()));
 
   return (
     <div className="flex flex-col gap-12">
+      {confirmDialog}
       <TempPassword state={result} />
       {result?.error && (
         <p role="alert" className="text-sm text-error">
@@ -46,16 +56,7 @@ export default function StaffManager({ rows }: { rows: StaffRow[] }) {
                 {r.email} · {r.pending ? "Hasn't set a password yet" : r.lastSignIn ? `Last signed in ${new Date(r.lastSignIn).toLocaleDateString()}` : "Never signed in"}
               </div>
             </div>
-            <select
-              aria-label={`Role for ${r.name || r.email}`}
-              value={r.role}
-              disabled={busy}
-              onChange={(e) => run(() => setRole(r.id, e.target.value as Role))}
-              className="border-b border-ink/25 bg-transparent py-1 text-sm"
-            >
-              <option value="editor">Editor</option>
-              <option value="owner">Owner</option>
-            </select>
+            <MiniSelect label="Role" value={r.role} disabled={busy} options={ROLES} onChange={(v) => v !== r.role && run(() => setRole(r.id, v as Role))} />
             <button type="button" disabled={busy} onClick={() => run(() => resetStaffPassword(r.id))} className="text-[11px] uppercase tracking-[0.18em] text-bronze-deep hover:underline">
               Reset password
             </button>
@@ -63,7 +64,7 @@ export default function StaffManager({ rows }: { rows: StaffRow[] }) {
               <button
                 type="button"
                 disabled={busy}
-                onClick={() => confirm(`Remove ${r.name || r.email}? They won't be able to sign in any more.`) && run(() => removeStaff(r.id))}
+                onClick={async () => (await ask({ title: `Remove ${r.name || r.email}?`, message: "They won't be able to sign in any more.", confirmLabel: "Remove", danger: true })) && run(() => removeStaff(r.id))}
                 className="text-[11px] uppercase tracking-[0.18em] text-error hover:underline"
               >
                 Remove
@@ -84,13 +85,7 @@ export default function StaffManager({ rows }: { rows: StaffRow[] }) {
             <span>Email</span>
             <input name="email" type="email" required />
           </label>
-          <label className="field">
-            <span>Role</span>
-            <select name="role" defaultValue="editor">
-              <option value="editor">Editor</option>
-              <option value="owner">Owner</option>
-            </select>
-          </label>
+          <RoleField />
         </div>
         {added?.error && (
           <p role="alert" className="text-sm text-error">
@@ -104,6 +99,19 @@ export default function StaffManager({ rows }: { rows: StaffRow[] }) {
           </button>
         </div>
       </form>
+    </div>
+  );
+}
+
+/** Role picker for the "Add a person" form; a hidden input carries the value. */
+function RoleField() {
+  const id = useId();
+  const [role, setRole] = useState("editor");
+  return (
+    <div className="field">
+      <span id={`${id}-label`}>Role</span>
+      <Select id={id} labelledBy={`${id}-label`} value={role} onChange={setRole} options={ROLES} triggerClassName={SELECT_TRIGGER} />
+      <input type="hidden" name="role" value={role} />
     </div>
   );
 }

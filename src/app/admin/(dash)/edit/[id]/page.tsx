@@ -27,7 +27,8 @@ export default async function EditPage({ params }: PageProps<"/admin/edit/[id]">
 
   return (
     <DocForm
-      key={row.updated_at}
+      // Stable across autosaves (each save re-renders this page); keeps focus and typing.
+      key={row.id}
       id={row.id}
       title={rowLabel(row)}
       fields={fields}

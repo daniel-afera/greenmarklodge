@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence } from "motion/react";
 import { fullName } from "@/lib/site";
 import { useSite } from "./SiteContext";
+import Logo from "@/components/ui/Logo";
 import Magnetic from "@/components/ui/Magnetic";
 import Menu from "./Menu";
 
@@ -63,9 +64,8 @@ export default function Header() {
             </nav>
           </div>
 
-          <Link href="/" aria-label={`${fullName(site)} home`} className="flex flex-col items-center gap-0.5">
-            <span className="pl-[0.42em] font-serif text-[22px] uppercase leading-none tracking-[0.42em] sm:text-[26px]">{site.name}</span>
-            <span className="pl-[0.5em] text-[8px] uppercase tracking-[0.5em] opacity-80 sm:text-[9px]">{site.tagline}</span>
+          <Link href="/" className="flex items-center">
+            <Logo size={56} alt={`${fullName(site)} home`} priority className="size-12 sm:size-14" />
           </Link>
 
           <div className="flex items-center justify-end gap-7">

@@ -10,6 +10,7 @@ import { getIn, setIn } from "@/cms/paths";
 import type { Img } from "@/content/types";
 import GalleryField from "./GalleryField";
 import ImageField from "./ImageField";
+import { useConfirm } from "@/components/ui/useConfirm";
 import { MiniButton, NumberInput, SelectInput, TextInput, TitleInput } from "./inputs";
 
 const AUTOSAVE_MS = 800;
@@ -25,6 +26,14 @@ function move<T>(arr: T[], from: number, to: number) {
   next.splice(to, 0, item);
   return next;
 }
+
+/** Path of a just-added list entry; its first input takes focus once it mounts. */
+let focusPath: string | null = null;
+const focusIfAdded = (p: string) => (el: HTMLElement | null) => {
+  if (!el || focusPath !== p) return;
+  focusPath = null;
+  (el.matches("input, textarea") ? el : el.querySelector<HTMLElement>("input, textarea"))?.focus();
+};
 
 function ListControls({ index, length, onMove, onRemove }: { index: number; length: number; onMove: (to: number) => void; onRemove: () => void }) {
   return (
@@ -67,6 +76,7 @@ export function FieldView({ field, path, value, onChange, errors }: { field: Fie
             <div key={i} className="flex items-end gap-4">
               <input
                 type="text"
+                ref={focusIfAdded(`${path}.${i}`)}
                 aria-label={`${field.itemLabel} ${i + 1}`}
                 value={item}
                 maxLength={120}
@@ -78,7 +88,12 @@ export function FieldView({ field, path, value, onChange, errors }: { field: Fie
           ))}
           {(field.max === undefined || items.length < field.max) && (
             <div>
-              <MiniButton onClick={() => set([...items, ""])}>+ Add {field.itemLabel.toLowerCase()}</MiniButton>
+              <MiniButton
+                onClick={() => {
+                  focusPath = `${path}.${items.length}`;
+                  set([...items, ""]);
+                }}
+              >+ Add {field.itemLabel.toLowerCase()}</MiniButton>
             </div>
           )}
           {error && <em className="text-xs not-italic text-error">{error}</em>}
@@ -100,7 +115,7 @@ export function FieldView({ field, path, value, onChange, errors }: { field: Fie
         <fieldset className="flex flex-col gap-6">
           <legend className="mb-6 font-serif text-2xl">{field.label}</legend>
           {items.map((item, i) => (
-            <div key={i} className="flex flex-col gap-6 border border-ink/10 p-5">
+            <div key={i} ref={focusIfAdded(`${path}.${i}`)} className="flex flex-col gap-6 border border-ink/10 p-5">
               <div className="flex items-center justify-between">
                 <span className="eyebrow text-muted">
                   {field.itemLabel} {i + 1}
@@ -114,7 +129,12 @@ export function FieldView({ field, path, value, onChange, errors }: { field: Fie
           ))}
           {(field.max === undefined || items.length < field.max) && (
             <div>
-              <MiniButton onClick={() => set([...items, Object.fromEntries(field.fields.map((f) => [f.key, f.kind === "number" ? 0 : ""]))])}>
+              <MiniButton
+                onClick={() => {
+                  focusPath = `${path}.${items.length}`;
+                  set([...items, Object.fromEntries(field.fields.map((f) => [f.key, f.kind === "number" ? 0 : ""]))]);
+                }}
+              >
                 + Add {field.itemLabel.toLowerCase()}
               </MiniButton>
             </div>
@@ -154,6 +174,7 @@ export default function DocForm({
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [dirty, setDirty] = useState(hasDraft);
   const [pending, startTransition] = useTransition();
+  const [ask, confirmDialog] = useConfirm();
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const queued = useRef<Value | null>(null);
   const saving = useRef<Promise<void> | null>(null);
@@ -225,9 +246,14 @@ export default function DocForm({
       } else setStatus({ kind: "error", text: res.error });
     });
 
-  const doDiscard = () =>
+  const doDiscard = async () => {
+    const ok = await ask(
+      isPublished
+        ? { title: "Discard unpublished changes?", message: "The page goes back to what's live on the site.", confirmLabel: "Discard", danger: true }
+        : { title: "Delete this item?", message: "It was never published, so discarding deletes it.", confirmLabel: "Delete", danger: true },
+    );
+    if (!ok) return;
     startTransition(async () => {
-      if (!confirm(isPublished ? "Discard all unpublished changes to this page?" : "This item was never published. Discarding deletes it. Continue?")) return;
       clearTimeout(timer.current);
       queued.current = null;
       if (saving.current) await saving.current;
@@ -239,6 +265,7 @@ export default function DocForm({
         window.location.reload();
       }
     });
+  };
 
   return (
     <div className="pb-32">
@@ -261,7 +288,7 @@ export default function DocForm({
             </a>
           )}
           {(dirty || !isPublished) && (
-            <button type="button" onClick={doDiscard} disabled={pending} className="text-[11px] uppercase tracking-[0.18em] text-error hover:underline disabled:opacity-40">
+            <button type="button" onClick={() => void doDiscard()} disabled={pending} className="text-[11px] uppercase tracking-[0.18em] text-error hover:underline disabled:opacity-40">
               Discard
             </button>
           )}
@@ -270,6 +297,7 @@ export default function DocForm({
           </button>
         </div>
       </div>
+      {confirmDialog}
       <div className="flex max-w-3xl flex-col gap-10">
         {fields.map((f) => (
           <FieldView key={f.key} field={f} path={f.key} value={value[f.key]} onChange={onChange} errors={errors} />

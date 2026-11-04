@@ -11,7 +11,7 @@ export const nav = [
   { label: "Contact", href: "/contact" },
 ] as const;
 
-/** "Aberash" → "Aberash Lodge" (unless the name already says Lodge). */
+/** "Green Mark" → "Green Mark Lodge" (unless the name already says Lodge). */
 export const fullName = (s: Pick<SiteSettings, "name">) => (/lodge/i.test(s.name) ? s.name : `${s.name} Lodge`);
 
 export const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;

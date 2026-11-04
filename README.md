@@ -1,4 +1,4 @@
-# Aberash Lodge — website
+# Green Mark Lodge — website
 
 A luxury lodge site built with Next.js 16, Tailwind CSS 4, Motion, GSAP + ScrollTrigger and Lenis. Content is edited in a custom editor backed by Supabase (Postgres, Storage, Auth). Booking requests are emailed to reception with Nodemailer.
 
