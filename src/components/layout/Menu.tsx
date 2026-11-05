@@ -62,7 +62,12 @@ export default function Menu({ onClose }: { onClose: () => void }) {
             {nav.map((item, i) => {
               const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
               return (
-                <li key={item.href} className="overflow-hidden">
+                // Font size lives on the <li> so the em-based clip below scales with it. The clip
+                // masks the slide-in like overflow-hidden would, but leaves room under the line
+                // for descenders (g, y) without making rows taller.
+                // Height term: 100svh minus top bar (~89px), page padding (≤144px) and gaps (24px),
+                // shared by 7 rows at line-height 1.1 → the list fills the screen without scrolling.
+                <li key={item.href} className="font-serif text-[clamp(34px,min(6.5vw,calc((100svh_-_260px)_/_7.8)),96px)] [clip-path:inset(0_-100vw_-0.3em_0)]">
                   <motion.div
                     initial={{ y: "110%" }}
                     animate={{ y: 0 }}
@@ -74,7 +79,7 @@ export default function Menu({ onClose }: { onClose: () => void }) {
                       onClick={onClose}
                       onMouseEnter={() => setHover(item.href)}
                       onFocus={() => setHover(item.href)}
-                      className={`group flex items-baseline gap-6 pb-[0.14em] font-serif text-[clamp(40px,6vw,84px)] font-light leading-[1.05] transition-[color,padding] duration-700 ease-[cubic-bezier(.19,1,.22,1)] hover:pl-6 hover:text-bronze-light ${
+                      className={`group flex items-baseline gap-6 font-light leading-[1.1] transition-[color,padding] duration-700 ease-[cubic-bezier(.19,1,.22,1)] hover:pl-6 hover:text-bronze-light ${
                         active ? "text-bronze-light" : ""
                       }`}
                     >
