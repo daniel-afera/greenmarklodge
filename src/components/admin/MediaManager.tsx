@@ -58,7 +58,7 @@ function Tile({ file, canDelete, selected, onToggle, onDelete, busy }: { file: M
           <ul className="flex flex-col gap-1">
             {file.usage.map((u) => (
               <li key={`${u.rowId}:${u.field}`}>
-                <Link href={`/admin/edit/${u.rowId}`} className="text-ink underline-offset-2 hover:underline">
+                <Link href={u.href} className="text-ink underline-offset-2 hover:underline">
                   {u.page}
                 </Link>
                 <span className="text-muted">

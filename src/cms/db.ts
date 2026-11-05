@@ -13,7 +13,7 @@ const pick = (row: Row, draft: boolean) => (draft ? (row.draft ?? row.published)
 async function queryDoc(id: string, draft: boolean): Promise<unknown> {
   const db = adminClient();
   if (!db) return null;
-  const { data, error } = await db.from("content").select("published, draft").eq("id", id).maybeSingle<Row>();
+  const { data, error } = await db.from("content").select("published, draft").eq("id", id).is("deleted_at", null).maybeSingle<Row>();
   if (error) throw error;
   return data ? pick(data, draft) : null;
 }
@@ -25,6 +25,7 @@ async function queryList(type: string, draft: boolean): Promise<unknown[] | null
     .from("content")
     .select("id, published, draft")
     .eq("type", type)
+    .is("deleted_at", null)
     .order("sort")
     .order("id")
     .returns<Row[]>();

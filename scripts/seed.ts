@@ -90,9 +90,9 @@ async function main() {
   ];
 
   const rows = [
-    ...singletons.map(([id, doc]) => ({ id, type: "singleton", sort: 0, published: swapImages(doc, images), draft: null })),
+    ...singletons.map(([id, doc]) => ({ id, type: "singleton", sort: 0, published: swapImages(doc, images), draft: null, deleted_at: null })),
     ...collections.flatMap(([type, items, idFor]) =>
-      items.map((item, i) => ({ id: idFor(item as never, i), type, sort: (i + 1) * 10, published: swapImages(item, images), draft: null })),
+      items.map((item, i) => ({ id: idFor(item as never, i), type, sort: (i + 1) * 10, published: swapImages(item, images), draft: null, deleted_at: null })),
     ),
   ];
 

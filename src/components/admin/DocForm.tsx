@@ -191,7 +191,9 @@ export default function DocForm({
       setStatus({ kind: "saving" });
       const res = await saveDraft(id, v);
       if (res.ok) {
-        setStatus({ kind: "saved", text: `Saved ${new Date(res.savedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` });
+        // Saved; warnings (e.g. a room web address another room uses) block publishing until fixed.
+        setErrors(res.warnings ?? {});
+        setStatus({ kind: "saved", text: `Saved ${new Date(res.savedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}${res.warnings ? " · fix the highlighted field before publishing" : ""}` });
         setDirty(true);
       } else {
         setErrors(res.issues ?? {});

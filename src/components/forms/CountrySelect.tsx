@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import Select, { type Option } from "./Select";
 import { countries, PINNED_COUNTRIES } from "@/lib/countries";
+import Flag from "./Flag";
 
 export default function CountrySelect({
   id,
@@ -17,7 +18,7 @@ export default function CountrySelect({
   onBlur?: () => void;
   invalid?: boolean;
 }) {
-  const options: Option[] = useMemo(() => countries.map((c) => ({ value: c.code, label: c.name, icon: c.flag, keywords: c.dial })), []);
+  const options: Option[] = useMemo(() => countries.map((c) => ({ value: c.code, label: c.name, icon: <Flag code={c.code} />, keywords: c.dial })), []);
   return (
     <Select
       id={id}
@@ -34,7 +35,7 @@ export default function CountrySelect({
       renderValue={(o) =>
         o ? (
           <span className="flex items-center gap-2.5">
-            <span className="text-lg leading-none">{o.icon}</span>
+            {o.icon}
             {o.label}
           </span>
         ) : (

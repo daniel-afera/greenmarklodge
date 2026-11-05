@@ -14,7 +14,7 @@ export const BUCKET = "media";
 export const STORAGE_LIMIT = Number(process.env.MEDIA_STORAGE_LIMIT_BYTES) || 1024 ** 3;
 const FOLDERS = ["uploads", "seed"];
 
-export type Usage = { rowId: string; page: string; field: string; state: "live" | "draft" | "live + draft" };
+export type Usage = { rowId: string; page: string; href: string; field: string; state: "live" | "draft" | "live + draft" };
 
 export type MediaFile = {
   path: string;
@@ -107,13 +107,18 @@ function imagesIn(value: unknown, fields: Field[]): Found[] {
 
 /** Storage path → where it's used, plus image details seen in content. */
 export async function usageByPath() {
-  const { data, error } = await db().from("content").select("id, type, published, draft").returns<Pick<ContentRow, "id" | "type" | "published" | "draft">[]>();
+  // Deleted items count too: their photos stay protected while they can be restored.
+  const { data, error } = await db()
+    .from("content")
+    .select("id, type, published, draft, deleted_at")
+    .returns<Pick<ContentRow, "id" | "type" | "published" | "draft" | "deleted_at">[]>();
   if (error) throw error;
   const usage = new Map<string, Usage[]>();
   const details = new Map<string, Found["img"]>();
   for (const row of data) {
     const fields = fieldsFor(row) ?? [];
-    const page = rowLabel(row);
+    const page = row.deleted_at ? `${rowLabel(row)} (deleted)` : rowLabel(row);
+    const href = row.deleted_at ? `/admin/list/${row.type}` : `/admin/edit/${row.id}`;
     const live = imagesIn(row.published, fields);
     const draft = imagesIn(row.draft, fields);
     // One entry per (row, field); mark whether it's live, draft or both.
@@ -122,7 +127,7 @@ export async function usageByPath() {
       for (const f of list) {
         const key = `${f.path}|${f.field}`;
         const prev = byKey.get(key);
-        byKey.set(key, { path: f.path, rowId: row.id, page, field: f.field, state: prev && prev.state !== state ? "live + draft" : state });
+        byKey.set(key, { path: f.path, rowId: row.id, page, href, field: f.field, state: prev && prev.state !== state ? "live + draft" : state });
         if (!details.has(f.path) || f.img.blur) details.set(f.path, f.img);
       }
     }

@@ -1,13 +1,11 @@
 import { getCountries, getCountryCallingCode, type CountryCode } from "libphonenumber-js";
 
-export type Country = { code: CountryCode; name: string; dial: string; flag: string };
-
-const flagOf = (code: string) => String.fromCodePoint(...[...code].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
+export type Country = { code: CountryCode; name: string; dial: string };
 
 const names = new Intl.DisplayNames(["en"], { type: "region" });
 
 export const countries: Country[] = getCountries()
-  .map((code) => ({ code, name: names.of(code) ?? code, dial: `+${getCountryCallingCode(code)}`, flag: flagOf(code) }))
+  .map((code) => ({ code, name: names.of(code) ?? code, dial: `+${getCountryCallingCode(code)}` }))
   .sort((a, b) => a.name.localeCompare(b.name));
 
 /** Shown first when the list is not filtered. */

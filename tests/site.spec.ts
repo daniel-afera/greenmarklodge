@@ -31,3 +31,15 @@ test("404 page", async ({ page }) => {
   const res = await page.goto("/no-such-page");
   expect(res?.status()).toBe(404);
 });
+
+test("country pickers show flag images, not emoji", async ({ page }) => {
+  await page.goto("/contact");
+  const flag = page.locator('img[src="/flags/et.svg"]').first();
+  await flag.scrollIntoViewIfNeeded(); // lazy-loaded
+  await expect(flag).toBeVisible();
+  await expect.poll(() => flag.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+  // Every listed country has a flag file.
+  const res = await page.request.get("/flags/ke.svg");
+  expect(res.ok()).toBe(true);
+  expect(res.headers()["content-type"]).toContain("svg");
+});

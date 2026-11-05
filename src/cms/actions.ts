@@ -26,7 +26,7 @@ const itemMeta = (row: Pick<ContentRow, "type">) => (isCollection(row.type) ? { 
 // ─── Drafts ───────────────────────────────────────────────────────────
 
 /** Save the whole working value of a document as its draft. */
-export async function saveDraft(id: string, value: unknown): Promise<ActionResult<{ savedAt: string }>> {
+export async function saveDraft(id: string, value: unknown): Promise<ActionResult<{ savedAt: string; warnings?: Record<string, string> }>> {
   const staff = await requireUser();
   const row = await getRow(id);
   if (!row) return fail("This item no longer exists.");
@@ -44,7 +44,32 @@ export async function saveDraft(id: string, value: unknown): Promise<ActionResul
     .single<{ updated_at: string }>();
   if (error) return fail("Couldn't save — please try again.");
   revalidatePath("/admin", "layout");
-  return { ok: true, savedAt: data.updated_at };
+  const warnings = await slugWarnings(row, parsed.data);
+  return { ok: true, savedAt: data.updated_at, ...(warnings ? { warnings } : {}) };
+}
+
+// ─── Room web addresses ───────────────────────────────────────────────
+
+/** Name of another live room whose web address (published or draft) is `slug`. */
+async function roomUsingSlug(slug: string, exceptId: string): Promise<string | null> {
+  const { data } = await db()
+    .from("content")
+    .select("id, type, published, draft")
+    .eq("type", "room")
+    .is("deleted_at", null)
+    .neq("id", exceptId)
+    .returns<Pick<ContentRow, "id" | "type" | "published" | "draft">[]>();
+  const other = (data ?? []).find((r) => [r.published, r.draft].some((v) => (v as { slug?: string } | null)?.slug === slug));
+  return other ? rowLabel(other) : null;
+}
+
+/** Field warnings for a saved draft (shown in the form; publishing is blocked until fixed). */
+async function slugWarnings(row: Pick<ContentRow, "id" | "type">, value: unknown) {
+  if (row.type !== "room") return null;
+  const slug = (value as { slug?: string }).slug?.trim();
+  if (!slug) return null;
+  const other = await roomUsingSlug(slug, row.id);
+  return other ? { slug: `“${other}” already uses this web address. Choose another before publishing.` } : null;
 }
 
 /** Drop unpublished changes (an unpublished new item is deleted). */
@@ -69,6 +94,12 @@ async function publishRow(row: Pick<ContentRow, "id" | "type" | "published" | "d
   if (!parsed.success) {
     const [path, msg] = Object.entries(issuesByPath(parsed.error))[0] ?? ["", "invalid"];
     return `${label(row)}: ${msg}${path ? ` (${path})` : ""}`;
+  }
+  if (row.type === "room") {
+    const slug = String((parsed.data as { slug?: string }).slug ?? "").trim();
+    if (!slug) return `${label(row)}: add a web address before publishing`;
+    const other = await roomUsingSlug(slug, row.id);
+    if (other) return `${label(row)}: “${other}” already uses the web address “${slug}”`;
   }
   const { error } = await db().from("content").update({ published: parsed.data, draft: null, updated_by: staffId }).eq("id", row.id);
   return error ? `${label(row)}: couldn't publish` : null;
@@ -122,14 +153,42 @@ export async function createItem(type: string): Promise<ActionResult<{ id: strin
   return { ok: true, id };
 }
 
-/** Delete an item. This takes effect on the site immediately. */
+/**
+ * Delete an item: it disappears from the site immediately but is kept for
+ * KEEP_DELETED_DAYS so it can be restored (Undo / Recently deleted).
+ */
 export async function deleteItem(id: string): Promise<ActionResult> {
   await requireUser();
   const row = await getRow(id);
   if (!row || !isCollection(row.type)) return fail("Only list items can be deleted.");
-  const { error } = await db().from("content").delete().eq("id", id);
+  const { error } = await db().from("content").update({ deleted_at: new Date().toISOString() }).eq("id", id);
   if (error) return fail("Couldn't delete the item.");
   refreshSite();
+  return { ok: true };
+}
+
+/** Bring a deleted item back, in its old place in the list. */
+export async function restoreItem(id: string): Promise<ActionResult> {
+  await requireUser();
+  const { data: row } = await db().from("content").select("id, type, published, draft").eq("id", id).not("deleted_at", "is", null).maybeSingle<Pick<ContentRow, "id" | "type" | "published" | "draft">>();
+  if (!row) return fail("This item can't be restored any more.");
+  if (row.type === "room") {
+    const slug = (working(row) as { slug?: string }).slug?.trim();
+    const other = slug ? await roomUsingSlug(slug, row.id) : null;
+    if (other) return fail(`Can't restore: “${other}” now uses the same web address (“${slug}”). Change that room's address first.`);
+  }
+  const { error } = await db().from("content").update({ deleted_at: null }).eq("id", id);
+  if (error) return fail("Couldn't restore the item.");
+  refreshSite();
+  return { ok: true };
+}
+
+/** Remove a deleted item for good (owners only). */
+export async function deleteForever(id: string): Promise<ActionResult> {
+  await requireUser("owner");
+  const { error } = await db().from("content").delete().eq("id", id).not("deleted_at", "is", null);
+  if (error) return fail("Couldn't delete the item.");
+  revalidatePath("/admin", "layout");
   return { ok: true };
 }
 
@@ -190,7 +249,7 @@ export async function saveField(id: string, path: string, value: unknown): Promi
 /** Drop every unpublished edit to published content (new, never-published items are kept). */
 export async function discardAll(): Promise<ActionResult> {
   await requireUser();
-  const { error } = await db().from("content").update({ draft: null }).not("draft", "is", null).not("published", "is", null);
+  const { error } = await db().from("content").update({ draft: null }).not("draft", "is", null).not("published", "is", null).is("deleted_at", null);
   if (error) return fail("Couldn't discard changes.");
   revalidatePath("/admin", "layout");
   return { ok: true };

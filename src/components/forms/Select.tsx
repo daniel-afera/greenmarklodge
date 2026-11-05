@@ -201,7 +201,7 @@ export default function Select({
                       i === active ? "bg-ink/[0.06]" : ""
                     } ${o.disabled ? "cursor-not-allowed opacity-40" : ""}`}
                   >
-                    {o.icon && <span className="shrink-0 text-lg leading-none">{o.icon}</span>}
+                    {o.icon && <span className="flex shrink-0 items-center text-lg leading-none">{o.icon}</span>}
                     <span className="min-w-0 flex-1 truncate">{o.label}</span>
                     {o.hint && <span className="shrink-0 text-xs tabular-nums text-muted">{o.hint}</span>}
                     <span className={`w-3.5 shrink-0 text-bronze-deep ${isSel ? "" : "invisible"}`}>

@@ -4,6 +4,7 @@ import { AsYouType, parsePhoneNumberFromString, validatePhoneNumberLength, type 
 import { useMemo } from "react";
 import Select, { type Option } from "./Select";
 import Field from "./Field";
+import Flag from "./Flag";
 import { countries, countryByCode, PINNED_COUNTRIES } from "@/lib/countries";
 
 export type PhoneValue = { country: CountryCode; national: string };
@@ -36,7 +37,7 @@ export default function PhoneField({
   valid?: boolean;
 }) {
   const dialOptions: Option[] = useMemo(
-    () => countries.map((c) => ({ value: c.code, label: c.name, hint: c.dial, icon: c.flag, keywords: c.dial })),
+    () => countries.map((c) => ({ value: c.code, label: c.name, hint: c.dial, icon: <Flag code={c.code} />, keywords: c.dial })),
     [],
   );
   const example = useMemo(() => {
@@ -72,7 +73,7 @@ export default function PhoneField({
           labelledBy={`${id}-label`}
           renderValue={(o) => (
             <span className="flex items-center gap-2">
-              <span className="text-lg leading-none">{o?.icon}</span>
+              {o?.icon}
               <span className="tabular-nums">{o?.hint}</span>
             </span>
           )}

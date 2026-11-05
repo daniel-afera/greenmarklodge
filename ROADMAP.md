@@ -4,7 +4,7 @@ How to pick this project up in a new chat: read this file, `README.md` and `AGEN
 
 ## Where things stand (Nov 2026)
 
-The website is done and pushed to `github.com/KalabGebru/aberash-lodge` (private, `main`). The client is **Green Mark Lodge** (name, logo and photos received 4 Nov 2026). The other copy — location, prices, reviews, contact details — is still placeholder.
+The website is done and pushed to `github.com/KalabGebru/green-mark-lodge` (private, `main`). The client is **Green Mark Lodge** (name, logo and photos received 4 Nov 2026). The other copy — location, prices, reviews, contact details — is still placeholder.
 
 - **Stack:**
   - Next.js 16.4 (App Router, Turbopack), Tailwind 4, Motion 14, GSAP + ScrollTrigger, Lenis
@@ -47,10 +47,10 @@ The website is done and pushed to `github.com/KalabGebru/aberash-lodge` (private
 
 ### Editor follow-ups (optional)
 
-- [ ] Deleting a list item or reordering takes effect immediately (no draft step). Add an "undo" or a soft delete if that turns out to be risky.
+- [x] Undo for deleting list items (5 Nov 2026): deleting hides the item (`deleted_at`) with an **Undo** banner; a **Recently deleted** section restores items to their old place for 30 days, then they're purged (`purgeDeleted` in `src/cms/store.ts`). Owners can delete for good. Photos of deleted items stay protected until then. Reordering is still immediate.
 - [x] Replaced or removed photos stay in the `media` bucket. Owners now delete unused ones on the Photos page (5 Nov 2026).
 - [ ] No database backups on the free plan. Add a weekly `content` export, or upgrade to Pro.
-- [ ] Two rooms could end up with the same web address (`slug`). Add a uniqueness check on publish.
+- [x] Room web addresses (5 Nov 2026): autosave warns on the field when another room uses the same `slug`; publishing (and restoring a deleted room) is blocked until it's unique, and a room can't be published without one.
 - [ ] Use a Supabase table for the booking rate limit (from the audit).
 
 ## Later (before launch)
@@ -59,7 +59,8 @@ The website is done and pushed to `github.com/KalabGebru/aberash-lodge` (private
 - [ ] **Site improvements from the audit:** do these after the real content is in (see **Site audit** below).
 - [ ] **Real email:** fill `SMTP_*`, `MAIL_FROM` and `RECEPTION_EMAIL` in `.env` and on Vercel. For Gmail, use an App Password.
 - [ ] **Deploy:** Vercel project → env vars (Supabase URL, publishable and secret keys, `CRON_SECRET`; not the DB password) → custom domain → set `NEXT_PUBLIC_SITE_URL`. Set the function region to Dublin (`dub1`) to sit next to the eu-west-1 database.
-- [ ] Optional: replace the emoji flags with small flag images (Windows shows letters instead of flags).
+  - **Keep-alive:** the free Supabase plan pauses after ~7 days without activity. `vercel.json` runs `/api/keepalive` daily, which writes the `keepalive` heartbeat row; the admin overview shows the last ping and warns after 3 days. It needs `CRON_SECRET` on Vercel. Nothing pings while the site isn't deployed (by choice). If the project ever pauses: Supabase dashboard → the project → **Restore**.
+- [x] Flag images (5 Nov 2026): country pickers use SVGs in `public/flags/` (from `flag-icons`, copied by `npx tsx scripts/copy-flags.ts`).
 - [ ] Optional: hook the newsletter signup up to a mailing-list provider (it's UI-only today).
 
 ## Site audit (4 Nov 2026)
