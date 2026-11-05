@@ -1,7 +1,27 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { changePassword, signIn } from "@/cms/staff-actions";
+
+/** Password input with a Show/Hide toggle. Focus stays in the field when toggling. */
+function PasswordInput(props: Omit<React.InputHTMLAttributes<HTMLInputElement>, "type">) {
+  const [shown, setShown] = useState(false);
+  return (
+    <div className="relative">
+      <input {...props} type={shown ? "text" : "password"} className="pr-16" autoCapitalize="off" autoCorrect="off" spellCheck={false} />
+      <button
+        type="button"
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => setShown((s) => !s)}
+        aria-pressed={shown}
+        aria-label={shown ? "Hide password" : "Show password"}
+        className="absolute inset-y-0 right-0 px-1 text-[10px] font-medium uppercase tracking-[0.28em] text-muted transition-colors hover:text-ink focus-visible:text-ink"
+      >
+        {shown ? "Hide" : "Show"}
+      </button>
+    </div>
+  );
+}
 
 function Shell({ title, intro, children }: { title: string; intro?: string; children: React.ReactNode }) {
   return (
@@ -35,7 +55,7 @@ export function LoginForm() {
         </label>
         <label className="field">
           <span>Password</span>
-          <input name="password" type="password" autoComplete="current-password" required />
+          <PasswordInput name="password" autoComplete="current-password" required />
         </label>
         <ErrorText text={state?.error} />
         <button className="btn btn-ink mt-2" disabled={pending}>
@@ -54,11 +74,11 @@ export function PasswordForm({ forced }: { forced: boolean }) {
       <form action={action} className="flex flex-col gap-7">
         <label className="field">
           <span>New password (10+ characters)</span>
-          <input name="password" type="password" autoComplete="new-password" minLength={10} required />
+          <PasswordInput name="password" autoComplete="new-password" minLength={10} required />
         </label>
         <label className="field">
           <span>Repeat it</span>
-          <input name="confirm" type="password" autoComplete="new-password" minLength={10} required />
+          <PasswordInput name="confirm" autoComplete="new-password" minLength={10} required />
         </label>
         <ErrorText text={state?.error} />
         <button className="btn btn-ink mt-2" disabled={pending}>

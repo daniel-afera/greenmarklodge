@@ -72,7 +72,7 @@ export default function Footer({ settings: s }: { settings: SiteSettings }) {
           )}
         </div>
 
-        <div aria-hidden="true" className="select-none text-center font-serif text-[clamp(64px,17vw,260px)] font-light uppercase leading-[0.8] tracking-[0.08em] text-ivory/[0.06]">
+        <div aria-hidden="true" className="select-none overflow-hidden whitespace-nowrap text-center font-serif text-[clamp(28px,9vw,150px)] font-light uppercase leading-[0.9] tracking-[0.08em] text-ivory/[0.06]">
           {s.name}
         </div>
         <div className="mt-10 flex flex-wrap justify-between gap-4 text-xs text-ivory/60">

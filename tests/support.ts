@@ -19,7 +19,7 @@ export async function signIn(page: Page) {
   const s = staff();
   await page.goto("/admin/login");
   await page.getByLabel("Email").fill(s.email);
-  await page.getByLabel("Password").fill(s.password);
+  await page.getByLabel("Password", { exact: true }).fill(s.password);
   await page.getByRole("button", { name: "Sign in" }).click();
   await page.waitForURL("**/admin");
 }

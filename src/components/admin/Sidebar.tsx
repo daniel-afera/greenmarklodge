@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { signOut } from "@/cms/staff-actions";
+import Logo from "@/components/ui/Logo";
 
 export type NavItem = { href: string; label: string; count?: number };
 
@@ -14,7 +15,9 @@ export default function Sidebar({ items, name, role, siteName }: { items: NavIte
   return (
     <>
       <div className="sticky top-0 z-40 flex items-center justify-between bg-ink px-5 py-4 text-ivory lg:hidden">
-        <span className="font-serif text-xl uppercase tracking-[0.3em]">{siteName}</span>
+        <Link href="/admin" aria-label={`${siteName} editor home`}>
+          <Logo size={36} alt={siteName} className="size-9" />
+        </Link>
         <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-controls="admin-nav" className="eyebrow">
           {open ? "Close" : "Menu"}
         </button>
@@ -23,8 +26,8 @@ export default function Sidebar({ items, name, role, siteName }: { items: NavIte
         id="admin-nav"
         className={`${open ? "flex" : "hidden"} fixed inset-0 top-[60px] z-40 flex-col overflow-y-auto bg-ink px-6 py-8 text-ivory lg:inset-y-0 lg:left-0 lg:top-0 lg:flex lg:w-64`}
       >
-        <Link href="/admin" className="mb-10 hidden font-serif text-2xl uppercase tracking-[0.3em] lg:block">
-          {siteName}
+        <Link href="/admin" aria-label={`${siteName} editor home`} className="mb-10 hidden lg:block">
+          <Logo size={72} alt={siteName} className="size-[72px]" />
         </Link>
         <nav aria-label="Editor" className="flex flex-1 flex-col gap-1">
           {items.map((item) => (

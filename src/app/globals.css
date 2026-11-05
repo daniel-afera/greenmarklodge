@@ -223,6 +223,10 @@ html.lenis body {
     outline: none;
     border-bottom-color: var(--color-bronze);
   }
+  /* Edge's built-in reveal eye would sit next to our Show/Hide button. */
+  .field input::-ms-reveal {
+    display: none;
+  }
   .field textarea {
     resize: vertical;
     min-height: 110px;

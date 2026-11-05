@@ -74,7 +74,7 @@ export default function Menu({ onClose }: { onClose: () => void }) {
                       onClick={onClose}
                       onMouseEnter={() => setHover(item.href)}
                       onFocus={() => setHover(item.href)}
-                      className={`group flex items-baseline gap-6 font-serif text-[clamp(40px,6vw,84px)] font-light leading-[1.1] transition-[color,padding] duration-700 ease-[cubic-bezier(.19,1,.22,1)] hover:pl-6 hover:text-bronze-light ${
+                      className={`group flex items-baseline gap-6 pb-[0.14em] font-serif text-[clamp(40px,6vw,84px)] font-light leading-[1.05] transition-[color,padding] duration-700 ease-[cubic-bezier(.19,1,.22,1)] hover:pl-6 hover:text-bronze-light ${
                         active ? "text-bronze-light" : ""
                       }`}
                     >

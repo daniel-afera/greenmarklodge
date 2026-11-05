@@ -21,12 +21,27 @@ export default function Header() {
   const { settings: site } = useSite();
 
   useEffect(() => {
+    // Hide/show only after a sustained scroll in one direction, so small
+    // jitters (trackpads, smooth-scroll easing) don't make the header blink.
+    const HIDE_AFTER = 120; // px scrolled down before hiding
+    const SHOW_AFTER = 80; // px scrolled up before showing
     let last = window.scrollY;
+    let travel = 0; // distance moved in the current direction (+down / -up)
     const onScroll = () => {
       const y = window.scrollY;
-      setScrolled(y > 40);
-      setHidden(y > 500 && y > last + 2 ? true : y < last - 2 ? false : (h) => h);
+      const dy = y - last;
       last = y;
+      setScrolled(y > 40);
+      if (y < 200) {
+        travel = 0;
+        setHidden(false);
+        return;
+      }
+      if (dy === 0) return;
+      // Reset the tally when the direction flips.
+      travel = Math.sign(dy) === Math.sign(travel) ? travel + dy : dy;
+      if (travel > HIDE_AFTER) setHidden(true);
+      else if (travel < -SHOW_AFTER) setHidden(false);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
