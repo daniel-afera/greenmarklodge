@@ -31,7 +31,7 @@ const hero: Field = {
   kind: "group",
   key: "hero",
   label: "Header",
-  fields: [image("image", "Photo"), text("eyebrow", "Small heading", 60), title("title"), para("text", "Intro text", 400)],
+  fields: [image("image", "Photo"), text("eyebrow", "Small heading", 60), title("title"), para("text", "Description (search engines & link previews)", 300)],
 };
 const cta: Field = {
   kind: "group",
@@ -44,6 +44,14 @@ const splitCard = (key: string, label: string): Field => ({
   key,
   label,
   fields: [image("image", "Photo"), text("eyebrow", "Small heading", 60), title("title"), para("text", "Text", 400), text("cta", "Button text", 40), text("href", "Button link", 120)],
+});
+
+/** Photo card with a short title and text (Gardens page). */
+const card = (key: string, label: string): Field => ({
+  kind: "group",
+  key,
+  label,
+  fields: [image("image", "Photo"), title("title"), para("text", "Text", 240)],
 });
 
 // ─── Singletons ───────────────────────────────────────────────────────
@@ -72,14 +80,14 @@ export const singletons = {
         kind: "group",
         key: "intro",
         label: "Introduction",
-        fields: [text("label", "Small heading", 60), para("statement", "Statement", 300), image("imageLarge", "Large photo"), image("imageSmall", "Small photo"), para("body", "Text", 600), text("linkLabel", "Link text", 40)],
+        fields: [text("label", "Small heading", 60), para("statement", "Statement", 300), image("imageLarge", "Large photo"), image("imageSmall", "Small photo"), para("body", "Text", 400), text("linkLabel", "Link text", 40)],
       },
       { kind: "strings", key: "marquee", label: "Scrolling words", itemLabel: "Word", max: 12 },
       { kind: "group", key: "roomsSection", label: "Rooms section", fields: [text("eyebrow", "Small heading", 60), title("title")] },
       { kind: "group", key: "experiencesSection", label: "Experiences section", fields: [text("eyebrow", "Small heading", 60), title("title"), para("text", "Text", 400)] },
       { kind: "list", key: "stats", label: "Numbers", itemLabel: "Number", max: 6, fields: [text("value", "Value", 10), text("unit", "Unit", 10), text("label", "Label", 40)] },
       splitCard("dining", "Dining card"),
-      splitCard("spa", "Spa card"),
+      splitCard("gardens", "Gardens card"),
       { kind: "group", key: "gallerySection", label: "Gallery section", fields: [title("title"), text("linkLabel", "Link text", 40)] },
       cta,
     ],
@@ -95,16 +103,23 @@ export const singletons = {
     ],
   },
   diningPage: { label: "Dining page", fields: [hero, para("statement", "Statement", 400), cta] },
-  spaPage: {
-    label: "Spa page",
+  gardensPage: {
+    label: "Gardens page",
     fields: [
       hero,
-      text("philosophyEyebrow", "Philosophy small heading", 60),
-      title("philosophyTitle", "Philosophy title"),
-      para("philosophyText", "Philosophy text", 900),
-      image("philosophyImage", "Philosophy photo"),
-      text("menuEyebrow", "Treatments small heading", 60),
-      title("menuTitle", "Treatments title"),
+      {
+        kind: "group",
+        key: "intro",
+        label: "Introduction",
+        fields: [
+          text("eyebrow", "Small heading", 60),
+          para("statement", "Statement", 200),
+          image("image", "Photo"),
+          { kind: "strings", key: "highlights", label: "Highlights", itemLabel: "Highlight", max: 8 },
+        ],
+      },
+      card("moments", "Card: sunrise to sunset"),
+      card("surroundings", "Card: surroundings"),
       cta,
     ],
   },
@@ -124,7 +139,7 @@ export const collections = {
     fields: [
       text("name", "Name", 60),
       text("slug", "Web address", 60, { hint: "Used in the link: /rooms/your-text. Lowercase letters, numbers and dashes.", pattern: ["^[a-z0-9]+(-[a-z0-9]+)*$", "Use lowercase letters, numbers and dashes."] }),
-      { kind: "select", key: "category", label: "Category", options: [{ value: "suite", label: "Suite" }, { value: "villa", label: "Villa" }, { value: "room", label: "Room" }] },
+      { kind: "select", key: "category", label: "Category", options: [{ value: "villa", label: "Villa" }, { value: "room", label: "Room" }] },
       text("tag", "Tag", 40),
       text("view", "View", 60),
       text("bed", "Bed", 60),
@@ -134,7 +149,7 @@ export const collections = {
       para("short", "Short description", 240),
       para("description", "Description", 1200),
       { kind: "images", key: "images", label: "Photos", max: 20 },
-      { kind: "strings", key: "amenities", label: "Amenities", itemLabel: "Amenity", max: 30 },
+      { kind: "strings", key: "amenities", label: "Layout & features", itemLabel: "Feature", max: 30 },
     ],
   },
   experience: {
@@ -148,12 +163,6 @@ export const collections = {
     singular: "restaurant",
     titleKey: "name",
     fields: [text("name", "Name", 60), text("kind", "Kind", 60), text("hours", "Hours", 60), para("text", "Text", 500), image("image", "Photo")],
-  },
-  treatment: {
-    label: "Spa treatments",
-    singular: "treatment",
-    titleKey: "name",
-    fields: [text("name", "Name", 60), text("duration", "Duration", 30), para("text", "Text", 400)],
   },
   testimonial: {
     label: "Reviews",

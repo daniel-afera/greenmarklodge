@@ -9,14 +9,13 @@ import type {
   Experience,
   ExperiencesPage,
   GalleryPage,
+  GardensPage,
   HomePage,
   Img,
   Room,
   RoomsPage,
   SiteSettings,
-  SpaPage,
   Testimonial,
-  Treatment,
   Venue,
 } from "./types";
 
@@ -79,7 +78,7 @@ export const fallbackSettings: SiteSettings = {
   name: "Green Mark",
   tagline: "Lodge · Bishoftu",
   description:
-    "A quiet luxury lodge on the rim of a crater lake in Bishoftu, Ethiopia — lakeside suites, highland dining, spa rituals and the Ethiopian coffee ceremony.",
+    "Green Mark Lodge in Bishoftu, Ethiopia — private villas and guest rooms surrounded by botanical gardens, with garden dining, the Buna Bar and the Ethiopian coffee ceremony.",
   phone: "+251 00 000 0000",
   whatsapp: "+251 00 000 0000",
   email: "reservations@greenmarklodge.com",
@@ -96,67 +95,52 @@ export const fallbackSettings: SiteSettings = {
 
 export const fallbackRooms: Room[] = [
   {
-    slug: "lakeside-suite",
-    name: "Lakeside Suite",
-    category: "suite",
-    tag: "Signature",
-    view: "Lake view",
-    bed: "King bed",
-    maxGuests: 2,
+    slug: "vip-villa",
+    name: "VIP Villa",
+    category: "villa",
+    tag: "Most space",
+    view: "Garden view",
+    bed: "Master, twin & 2 single bedrooms",
+    maxGuests: 6,
     size: "[SIZE] m²",
     priceFrom: "[RATE]",
-    short: "King bed · Private terrace · Soaking tub",
+    short: "4 bedrooms · Salon · Open-plan kitchen",
     description:
-      "Floor-to-ceiling doors open onto a private terrace above the water. A deep stone soaking tub, a reading nook and the first light of morning straight across the lake.",
-    images: [img("king-room", "Lakeside Suite bedroom"), img("king-room-2", "King bed and wardrobe"), img("king-room-3", "Bedroom window onto the garden"), img("king-bath", "Suite bathroom")],
-    amenities: ["Private lakeside terrace", "Stone soaking tub", "Jebena coffee set", "Rain shower", "Hand-woven linens", "Breakfast included"],
+      "Experience a more spacious and private stay in our VIP Villa. Ideal for families, groups and guests looking for additional space and privacy.",
+    images: [img("residence-lounge", "VIP Villa living room"), img("residence-kitchen", "VIP Villa open-plan kitchen"), img("residence-dining", "VIP Villa salon and dining area"), img("residence-bedroom", "VIP Villa bedroom")],
+    amenities: ["1 master bedroom", "2 single bedrooms", "1 twin bedroom", "Living room / salon", "Open-plan kitchen"],
   },
   {
-    slug: "garden-villa",
-    name: "Garden Villa",
+    slug: "standard-villa",
+    name: "Standard Villa",
     category: "villa",
     tag: "Families",
     view: "Garden view",
-    bed: "King + twin",
-    maxGuests: 4,
+    bed: "Master, twin & single bedroom",
+    maxGuests: 5,
     size: "[SIZE] m²",
     priceFrom: "[RATE]",
-    short: "King + twin · Plunge pool · Lounge",
+    short: "3 bedrooms · Salon · Open-plan kitchen",
     description:
-      "A standalone villa set among jacaranda and acacia, with its own plunge pool, a lounge for long evenings and space enough for the whole family.",
-    images: [img("cottage", "Garden Villa — a round thatched cottage"), img("cottage-room", "Garden Villa bedroom"), img("cottage-bath", "Garden Villa bathroom")],
-    amenities: ["Private plunge pool", "Separate lounge", "Garden terrace", "Children's amenities", "Outdoor shower", "Breakfast included"],
+      "Enjoy a comfortable villa experience with a welcoming living space and convenient kitchen facilities. Suitable for families and small groups seeking a relaxing stay.",
+    images: [img("cottage", "Standard Villa among the gardens"), img("cottage-room", "Standard Villa bedroom"), img("cottage-bath", "Standard Villa bathroom"), img("villas", "Villas and flowerbeds")],
+    amenities: ["1 master bedroom", "1 twin bedroom", "1 single bedroom", "Living room / salon", "Open-plan kitchen"],
   },
   {
-    slug: "highland-room",
-    name: "Highland Room",
+    slug: "single-room",
+    name: "Single Room",
     category: "room",
-    tag: "Classic",
-    view: "Hillside view",
-    bed: "King or twin",
-    maxGuests: 2,
+    tag: "Solo travellers",
+    view: "Garden view",
+    bed: "Single bed",
+    maxGuests: 1,
     size: "[SIZE] m²",
     priceFrom: "[RATE]",
-    short: "King or twin · Balcony · Rain shower",
-    description: "Warm timber, woven textiles and a balcony facing the hills. A calm, generous room for a weekend away from the city.",
-    images: [img("double-room", "Highland Room"), img("double-room-2", "Highland Room with wardrobe"), img("double-room-3", "Morning light through the window")],
-    amenities: ["Hillside balcony", "Rain shower", "Work desk", "Jebena coffee set", "Fast Wi-Fi", "Breakfast included"],
-  },
-  {
-    slug: "green-mark-residence",
-    name: "Green Mark Residence",
-    category: "suite",
-    tag: "Two bedrooms",
-    view: "Panoramic lake",
-    bed: "Two king beds",
-    maxGuests: 4,
-    size: "[SIZE] m²",
-    priceFrom: "[RATE]",
-    short: "Two bedrooms · Butler · Dining room",
+    short: "Single bed · Private shower",
     description:
-      "Our finest residence: two bedrooms, a private dining room and a wraparound terrace, with a dedicated butler to arrange your days.",
-    images: [img("residence-lounge", "Green Mark Residence living room"), img("residence-kitchen", "Kitchen and dining table"), img("residence-dining", "Lounge and dining area"), img("residence-bedroom", "Residence bedroom")],
-    amenities: ["Dedicated butler", "Private dining room", "Wraparound terrace", "Two en-suite bathrooms", "Airport transfer included", "Breakfast included"],
+      "Our individual guest rooms offer a simple and comfortable accommodation option. Ideal for individual travellers and guests looking for a convenient and relaxing stay.",
+    images: [img("double-room", "Single Room"), img("double-room-2", "Single Room with wardrobe"), img("double-room-3", "Morning light through the window"), img("wood-room", "Guest room with wooden floor")],
+    amenities: ["Single bedroom", "Private shower"],
   },
 ];
 
@@ -169,41 +153,41 @@ export const fallbackExperiences: Experience[] = [
     cta: "Reserve a ceremony",
   },
   {
-    title: "Sunrise on",
-    italic: "the lake",
-    text: "Glide out by canoe as the mist lifts off the crater. Pelicans, kingfishers and the sound of nothing at all.",
-    image: img("sunset", "Sunset over the cottages"),
-    cta: "Book at the front desk",
-  },
-  {
-    title: "Crater rim",
+    title: "Garden",
     italic: "walks",
-    text: "Guided walks between Bishoftu's crater lakes, past farmsteads and acacia, ending with a picnic above the water.",
-    image: img("tree-drive", "Tree-lined drive through the grounds"),
-    cta: "See the routes",
+    text: "Wander the pathways of our botanical gardens among greenery, flowers and diverse plant life. Stop for a photograph, or simply sit and enjoy the quiet.",
+    image: img("gardens", "The lodge gardens"),
+    cta: "Explore the gardens",
   },
   {
-    title: "Afternoons by",
-    italic: "the pool",
-    text: "A heated pool open to the highland sky, cabanas in the shade and fresh juice brought to your lounger.",
-    image: img("gardens", "The lodge gardens"),
+    title: "Sunrise to",
+    italic: "sunset",
+    text: "Gentle morning light over the gardens, and in the evening the warm colours of sunset filtering through the greenery — the loveliest hours to be outdoors.",
+    image: img("sunset", "Sunset over the cottages"),
     cta: "Plan your day",
+  },
+  {
+    title: "Explore the",
+    italic: "surroundings",
+    text: "Beyond the gardens, discover nearby natural attractions, lakes and interesting destinations. Ask our team about sightseeing and local experiences.",
+    image: img("tree-drive", "Tree-lined drive through the grounds"),
+    cta: "Ask our team",
   },
 ];
 
 export const fallbackTestimonials: Testimonial[] = [
-  { text: "We came for two nights and stayed five. The mornings on that lake are something I will carry with me for years.", who: "[Guest name] · [Country]" },
+  { text: "We came for two nights and stayed five. The mornings in those gardens are something I will carry with me for years.", who: "[Guest name] · [Country]" },
   { text: "The coffee ceremony on our first evening set the tone — every detail felt considered, and nothing felt rushed.", who: "[Guest name] · [Country]" },
   { text: "Close enough to Addis for a weekend, far enough to forget it. Our favourite place in Ethiopia.", who: "[Guest name] · [Country]" },
 ];
 
 export const fallbackVenues: Venue[] = [
   {
-    name: "Lakehouse Kitchen",
-    kind: "All-day dining",
+    name: "Garden Kitchen",
+    kind: "Restaurant",
     hours: "06:30 – 22:30",
-    text: "Highland produce, injera from our own teff, and fish from the lake — served on the terrace as the sun goes down.",
-    image: img("main-building-2", "Lakehouse Kitchen in the main building"),
+    text: "Breakfast, lunch, dinner and refreshments in a relaxing garden setting — good food to share with family and friends.",
+    image: img("main-building-2", "Garden Kitchen in the main building"),
   },
   {
     name: "Buna Bar",
@@ -213,61 +197,54 @@ export const fallbackVenues: Venue[] = [
     image: img("bar", "Buna Bar"),
   },
   {
-    name: "The Jetty Table",
+    name: "The Garden Table",
     kind: "Private dining",
     hours: "By reservation",
-    text: "A candlelit table for two at the end of the jetty, with a tasting menu composed around your evening.",
+    text: "A candlelit table for two among the gardens, with a menu composed around your evening.",
     image: img("buffet-2", "Buffet in the garden restaurant"),
   },
 ];
 
-export const fallbackTreatments: Treatment[] = [
-  { name: "Buna Coffee Scrub", duration: "60 min", text: "Freshly ground coffee and shea butter to polish and awaken the skin." },
-  { name: "Highland Honey Wrap", duration: "75 min", text: "Wild Ethiopian honey and herbs, followed by a slow scalp massage." },
-  { name: "Lakeside Deep Tissue", duration: "90 min", text: "Firm, unhurried bodywork in a treatment room open to the water." },
-  { name: "Hammam Ritual", duration: "120 min", text: "Steam, black soap, kessa scrub and a warm oil massage to close." },
-];
-
-const defaultCta = { image: img("cottage-terrace", "Cottage terrace opening onto the garden"), eyebrow: "Reserve your stay", title: "Your stay begins at / *the water's edge*" };
+const defaultCta = { image: img("cottage-terrace", "Cottage terrace opening onto the garden"), eyebrow: "Reserve your stay", title: "Your peaceful escape, / *surrounded by nature*" };
 
 export const fallbackHome: HomePage = {
-  hero: { image: img("main-building", "Green Mark Lodge main building among the trees"), eyebrow: "Lake Bishoftu · Ethiopian Highlands", title: "Where the lake / *remembers* your name" },
+  hero: { image: img("main-building", "Green Mark Lodge main building among the trees"), eyebrow: "Botanical gardens · Bishoftu", title: "Experience Nature. / *Enjoy Comfort.* / Discover Tranquility." },
   intro: {
     label: "Welcome",
     statement:
-      "A quiet lodge on the rim of an ancient crater lake. Mornings arrive in mist, afternoons in highland sun, and evenings close with coffee poured three times — the Ethiopian way. Come for a night; stay for the stillness.",
+      "A peaceful escape among botanical gardens — where nature and comfort meet, from the first morning light to the last colours of sunset.",
     imageLarge: img("garden-drive", "Garden drive shaded by trees"),
     imageSmall: img("garden-restaurant", "Garden restaurant under the canopy"),
-    body: "Forty-five kilometres from Addis Ababa, the city falls away and the crater lakes of Bishoftu open up. Green Mark is a small lodge on the water — built from local stone and eucalyptus, run by people who grew up on these shores.",
-    linkLabel: "Discover the lodge",
+    body: "Private villas and guest rooms, garden walks and good food, close to Addis Ababa. Come for a getaway, a family holiday or a special occasion.",
+    linkLabel: "Discover the gardens",
   },
-  marquee: ["Stillness", "Crater lakes", "Highland air", "Coffee ceremony", "Slow mornings", "Lakeside dining"],
-  roomsSection: { eyebrow: "Rooms & Suites", title: "Rest, *unhurried*" },
+  marquee: ["Botanical gardens", "Fresh air", "Coffee ceremony", "Slow mornings", "Garden dining", "Golden sunsets"],
+  roomsSection: { eyebrow: "Accommodation", title: "Comfort *meets nature*" },
   experiencesSection: {
     eyebrow: "Experiences",
-    title: "Days shaped by / *the highlands*",
-    text: "Slow mornings on the water, coffee roasted over open embers, long walks along the crater rim. Each day is composed around you — or left entirely open.",
+    title: "Days shaped by / *nature*",
+    text: "Garden walks, coffee poured three times and warm sunsets through the trees. Fill each day, or leave it entirely open.",
   },
   stats: [
     { value: "1920", unit: "m", label: "Above sea level" },
     { value: "45", unit: "km", label: "From Addis Ababa" },
-    { value: "[00]", unit: "", label: "Lakeside residences" },
+    { value: "3", unit: "", label: "Ways to stay" },
   ],
   dining: {
     href: "/dining",
     image: img("restaurant-tables", "Tables in the garden restaurant"),
     eyebrow: "Dining",
-    title: "Lakehouse *Kitchen*",
-    text: "Highland produce, injera from our own teff, and fish from the lake — served on the terrace as the sun goes down.",
-    cta: "View menus",
+    title: "Good food, *beautiful setting*",
+    text: "Breakfast to dinner, in a relaxed garden setting.",
+    cta: "View dining",
   },
-  spa: {
-    href: "/spa",
+  gardens: {
+    href: "/gardens",
     image: img("gardens-2", "Quiet corner of the gardens"),
-    eyebrow: "Spa & Wellness",
-    title: "The *Quiet* House",
-    text: "Rituals with coffee, honey and highland herbs. A hammam, steam room and treatment suites facing the water.",
-    cta: "Explore treatments",
+    eyebrow: "The Gardens",
+    title: "Botanical *gardens*",
+    text: "Pathways, flowers and greenery — lovely from sunrise to sunset.",
+    cta: "Explore the gardens",
   },
   gallerySection: { title: "Moments at *Green Mark*", linkLabel: "Open the gallery" },
   cta: defaultCta,
@@ -275,10 +252,10 @@ export const fallbackHome: HomePage = {
 
 export const fallbackRoomsPage: RoomsPage = {
   hero: {
-    image: img("cottages", "Round thatched cottages"),
-    eyebrow: "Rooms & Suites",
-    title: "A room with / *a horizon*",
-    text: "Every residence faces the water or the hills. Natural stone, hand-woven textiles by local artisans, and nothing to break the view.",
+    image: img("cottages", "Thatched cottages among the gardens"),
+    eyebrow: "Accommodation",
+    title: "Comfort / *meets nature*",
+    text: "Private villas and guest rooms surrounded by botanical gardens at Green Mark Lodge.",
   },
   comfortsEyebrow: "In every residence",
   comfortsTitle: "Small comforts, *carefully chosen*",
@@ -288,44 +265,52 @@ export const fallbackRoomsPage: RoomsPage = {
     { title: "Airport transfer", text: "Private car from Bole International on request." },
     { title: "Fast Wi-Fi", text: "Throughout the lodge — and easy to switch off." },
   ],
-  cta: { image: img("cottage-terrace", "Cottage terrace"), eyebrow: "We're happy to help", title: "Not sure which to *choose?*" },
+  cta: { image: img("cottage-terrace", "Cottage terrace"), eyebrow: "We're happy to help", title: "Discover your / *perfect stay*" },
 };
 
 export const fallbackDiningPage: DiningPage = {
   hero: {
     image: img("restaurant", "The garden restaurant"),
     eyebrow: "Dining",
-    title: "From the lake, / *the field, the fire*",
-    text: "Three places to eat and drink, each with a view of the water. Ingredients come from our garden, our neighbours and the lake itself.",
+    title: "Good food in / *a beautiful setting*",
+    text: "Breakfast, lunch and dinner in a relaxed garden setting — for guests, families and visitors.",
   },
-  statement:
-    "Our kitchen cooks the way Ethiopian families do — slowly, generously, and with spice blended by hand. Berbere from the market in Bishoftu, teff from the highlands, coffee from Sidamo and Yirgacheffe.",
+  statement: "Breakfast, lunch, dinner or a quiet coffee — good food in a relaxing garden setting, for our guests and anyone who'd like a special meal.",
   cta: { image: img("buffet", "Buffet at the garden restaurant"), eyebrow: "Stay & dine", title: "Dinner is better / *when you stay the night*" },
 };
 
-export const fallbackSpaPage: SpaPage = {
+export const fallbackGardensPage: GardensPage = {
   hero: {
     image: img("greenery", "Lush greenery in the gardens"),
-    eyebrow: "Spa & Wellness",
-    title: "The Quiet / *House*",
-    text: "A hammam, steam room and four treatment suites facing the water. Rituals built on Ethiopian coffee, wild honey and highland herbs.",
+    eyebrow: "The Gardens",
+    title: "Discover the beauty / *of nature*",
+    text: "Walk the botanical gardens at Green Mark Lodge — pathways, flowers and greenery, beautiful from sunrise to sunset.",
   },
-  philosophyEyebrow: "Philosophy",
-  philosophyTitle: "Slow down / *to the pace of the lake*",
-  philosophyText:
-    "Every treatment begins with a cup of buna and ends in the relaxation room above the water. Our therapists trained in Addis Ababa and abroad, and use products made with Ethiopian ingredients wherever we can.",
-  philosophyImage: img("green-path", "Green path through the grounds"),
-  menuEyebrow: "Signature rituals",
-  menuTitle: "Treatments *menu*",
-  cta: { image: img("sunset-2", "Sunset over the cottages"), eyebrow: "Wellness stays", title: "Three nights to *reset*" },
+  intro: {
+    eyebrow: "Botanical gardens",
+    statement: "Greenery, flowers and quiet pathways — gardens made for slow walks, photographs and fresh air.",
+    image: img("green-path", "Garden path through the trees"),
+    highlights: ["Botanical surroundings", "Walking pathways", "Greenery and natural scenery", "Golden mornings and evenings", "Space to relax and take photos"],
+  },
+  moments: {
+    image: img("sunset", "Sunset over the cottages"),
+    title: "Sunrise *to sunset*",
+    text: "Soft morning light over the gardens, and warm evening colours through the trees — the loveliest hours to be outside.",
+  },
+  surroundings: {
+    image: img("tree-drive", "Tree-lined drive through the grounds"),
+    title: "Beyond *the gardens*",
+    text: "Nearby lakes, natural attractions and local sights are easy to reach. Our team is happy to help you plan.",
+  },
+  cta: { image: img("gardens", "The lodge gardens"), eyebrow: "Stay in the gardens", title: "Wake up / *in the gardens*" },
 };
 
 export const fallbackExperiencesPage: ExperiencesPage = {
   hero: {
     image: img("garden-event", "Celebration in the garden"),
     eyebrow: "Experiences",
-    title: "Days shaped by / *the highlands*",
-    text: "Arrange any of these with reception before you arrive or on the day. Most are included in your stay; some are private by request.",
+    title: "Days shaped by / *nature*",
+    text: "Coffee ceremonies, garden walks and sunsets at Green Mark Lodge — arrange any of them with reception.",
   },
   cta: { ...defaultCta, image: img("sunset-2", "Sunset over the cottages") },
 };

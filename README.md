@@ -37,7 +37,7 @@ Edits are saved as **drafts** automatically. Visitors see them only after **Publ
 
 **Photos** are resized to at most 2400px and converted to WebP in the browser before upload. This also strips location data, and iPhone HEIC photos are converted too. Click a photo in the editor to set its focal point, which stays in view when the photo is cropped.
 
-**Title syntax:** in titles, ` / ` starts a new line and `*text*` is italic. For example, `Where the lake / *remembers* your name`.
+**Title syntax:** in titles, ` / ` starts a new line and `*text*` is italic. For example, `Wake up / *in the gardens*`.
 
 **Built-in content:** `src/content/fallback.ts` holds the original content. Any empty field falls back to it, and the whole site runs on it when Supabase isn't configured. Bracketed values such as `[RATE]` and `[Guest name]` are placeholders.
 

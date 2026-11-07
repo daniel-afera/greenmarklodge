@@ -15,16 +15,19 @@ import { cms } from "@/cms/mark";
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 /**
- * Desktop: the section pins and the room cards travel sideways as you scroll.
+ * Desktop with more than 3 rooms: the section pins and the cards travel sideways as you scroll.
+ * Desktop with 3 or fewer: a plain row (pinning would be a near-empty scroll).
  * Mobile / reduced motion: a native swipeable row with snap points.
  */
 export default function RoomsShowcase({ section: head, rooms }: { section: HomePage["roomsSection"]; rooms: Room[] }) {
   const section = useRef<HTMLElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const bar = useRef<HTMLSpanElement>(null);
+  const pinned = rooms.length > 3;
 
   useGSAP(
     () => {
+      if (!pinned) return;
       const mm = gsap.matchMedia();
       mm.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
         const el = track.current!;
@@ -45,11 +48,11 @@ export default function RoomsShowcase({ section: head, rooms }: { section: HomeP
       });
       return () => mm.revert();
     },
-    { scope: section },
+    { scope: section, dependencies: [pinned] },
   );
 
   return (
-    <section ref={section} id="rooms" className="flex flex-col justify-center overflow-hidden bg-sand py-[clamp(96px,11vw,160px)] lg:h-svh lg:py-0">
+    <section ref={section} id="rooms" className={`flex flex-col justify-center overflow-hidden bg-sand py-[clamp(96px,11vw,160px)] ${pinned ? "lg:h-svh lg:py-0" : ""}`}>
       <div className="container-luxe flex flex-wrap items-end justify-between gap-8">
         <div>
           <div className="eyebrow mb-5 text-bronze-deep" {...cms("homePage", "roomsSection.eyebrow")}>
@@ -62,28 +65,30 @@ export default function RoomsShowcase({ section: head, rooms }: { section: HomeP
           />
         </div>
         <div className="flex items-center gap-8">
-          <span className="relative hidden h-px w-40 bg-ink/15 lg:block" aria-hidden="true">
-            <span ref={bar} className="absolute inset-0 origin-left scale-x-0 bg-ink" />
-          </span>
+          {pinned && (
+            <span className="relative hidden h-px w-40 bg-ink/15 lg:block" aria-hidden="true">
+              <span ref={bar} className="absolute inset-0 origin-left scale-x-0 bg-ink" />
+            </span>
+          )}
           <ButtonLink href="/rooms" variant="dark">
-            All residences
+            All rooms & villas
           </ButtonLink>
         </div>
       </div>
 
       <div
         ref={track}
-        data-cursor="Drag"
-        className="no-scrollbar mt-14 flex snap-x snap-mandatory gap-7 overflow-x-auto px-[clamp(20px,4vw,56px)] lg:mt-16 lg:w-max lg:snap-none lg:overflow-visible"
+        data-cursor={pinned ? "Drag" : undefined}
+        className={`no-scrollbar mt-14 flex snap-x snap-mandatory scroll-px-[clamp(20px,4vw,56px)] gap-7 overflow-x-auto px-[clamp(20px,4vw,56px)] lg:mt-16 lg:snap-none lg:overflow-visible ${pinned ? "lg:w-max" : "mx-auto w-full max-w-[1600px] lg:grid lg:grid-cols-3"}`}
       >
         {rooms.map((r, i) => (
           <Link
             key={r.slug}
             href={`/rooms/${r.slug}`}
             data-cursor="View"
-            className="group w-[clamp(290px,34vw,500px)] shrink-0 snap-start text-ink"
+            className={`group w-[clamp(290px,34vw,500px)] shrink-0 snap-start text-ink ${pinned ? "" : "lg:w-auto"}`}
           >
-            <div className="zoom-img relative h-[clamp(380px,40vw,560px)] lg:h-[min(56svh,560px)]">
+            <div className={`zoom-img relative h-[clamp(380px,40vw,560px)] ${pinned ? "lg:h-[min(56svh,560px)]" : "lg:h-[clamp(380px,32vw,520px)]"}`}>
               <CmsImage image={r.images[0]} fill sizes="(min-width:1024px) 34vw, 85vw" className="object-cover" cms={cms(r._id, "images")} />
               <span className="eyebrow absolute left-5 top-5 bg-ivory/90 px-3.5 py-2 text-[10px]" {...cms(r._id, "tag")}>
                 {r.tag}
@@ -106,7 +111,7 @@ export default function RoomsShowcase({ section: head, rooms }: { section: HomeP
             </div>
           </Link>
         ))}
-        <div className="w-px shrink-0 lg:w-[clamp(20px,4vw,56px)]" />
+        {pinned ? <div className="w-px shrink-0 lg:w-[clamp(20px,4vw,56px)]" /> : <div className="w-px shrink-0 lg:hidden" />}
       </div>
     </section>
   );

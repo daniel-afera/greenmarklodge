@@ -5,7 +5,7 @@ import { getSettings } from "@/content";
 import PublishAll from "@/components/admin/PublishAll";
 import Sidebar, { type NavItem } from "@/components/admin/Sidebar";
 
-const LIST_ORDER: CollectionType[] = ["room", "experience", "venue", "treatment", "testimonial"];
+const LIST_ORDER: CollectionType[] = ["room", "experience", "venue", "testimonial"];
 const PAGE_IDS = Object.keys(singletons).filter((id) => id !== "siteSettings" && id !== "galleryPage");
 
 export default async function DashLayout({ children }: LayoutProps<"/admin">) {

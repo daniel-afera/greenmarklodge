@@ -3,9 +3,9 @@ import type { SiteSettings } from "@/content/types";
 /** Site structure (not editable content). Text and contact details are content (src/content). */
 export const nav = [
   { label: "The Lodge", href: "/" },
-  { label: "Rooms & Suites", href: "/rooms" },
+  { label: "Rooms & Villas", href: "/rooms" },
   { label: "Dining", href: "/dining" },
-  { label: "Spa & Wellness", href: "/spa" },
+  { label: "The Gardens", href: "/gardens" },
   { label: "Experiences", href: "/experiences" },
   { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },

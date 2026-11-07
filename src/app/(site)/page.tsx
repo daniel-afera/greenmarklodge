@@ -4,7 +4,7 @@ import Hero from "@/components/home/Hero";
 import Intro from "@/components/home/Intro";
 import RoomsShowcase from "@/components/home/RoomsShowcase";
 import Experiences from "@/components/home/Experiences";
-import DiningSpa from "@/components/home/DiningSpa";
+import SplitCards from "@/components/home/SplitCards";
 import Testimonials from "@/components/home/Testimonials";
 import Marquee from "@/components/ui/Marquee";
 import Counter from "@/components/ui/Counter";
@@ -79,10 +79,10 @@ export default async function Home() {
         </section>
       )}
 
-      <DiningSpa
+      <SplitCards
         cards={[
           { key: "dining", card: home.dining },
-          { key: "spa", card: home.spa },
+          { key: "gardens", card: home.gardens },
         ]}
       />
       <Testimonials items={testimonials} />

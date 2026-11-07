@@ -8,7 +8,7 @@ export function inlineTitle(line: string): ReactNode {
 
 /**
  * Editor title syntax → lines for MaskText / headings.
- * "Where the lake / *remembers* your name" → ["Where the lake", <>…<em>remembers</em>…</>]
+ * "Wake up / *in the gardens*" → ["Wake up", <><em>in the gardens</em></>]
  */
 export function titleLines(raw: string): ReactNode[] {
   return raw

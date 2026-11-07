@@ -44,7 +44,7 @@ export default async function RoomPage({ params }: PageProps<"/rooms/[slug]">) {
           </Reveal>
           {room.amenities.length > 0 && (
             <Reveal delay={0.1}>
-              <h2 className="eyebrow mb-6 mt-16 text-bronze-deep">Amenities</h2>
+              <h2 className="eyebrow mb-6 mt-16 text-bronze-deep">Layout & features</h2>
               <ul className="grid gap-x-10 sm:grid-cols-2" {...cms(room._id, "amenities")}>
                 {room.amenities.map((a) => (
                   <li key={a} className="flex items-center gap-4 border-b border-ink/10 py-4 text-[15px]">

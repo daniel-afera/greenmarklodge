@@ -8,6 +8,11 @@
  *
  *   npm run seed                 insert what's missing, keep existing rows
  *   npm run seed -- --overwrite  replace existing rows (drafts are cleared)
+ *
+ * Extra options (combine with --overwrite):
+ *   --keep=siteSettings,galleryPage  leave these rows untouched (e.g. ones staff edited)
+ *   --prune                          move rows the built-in content no longer has
+ *                                    (old rooms, removed pages) to the admin trash
  */
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
@@ -18,6 +23,8 @@ import type { Img } from "../src/content/types";
 
 const MAX_SIDE = 2400;
 const overwrite = process.argv.includes("--overwrite");
+const prune = process.argv.includes("--prune");
+const keep = new Set((process.argv.find((a) => a.startsWith("--keep="))?.slice(7) ?? "").split(",").filter(Boolean));
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.SUPABASE_SECRET_KEY;
@@ -76,7 +83,7 @@ async function main() {
     ["homePage", F.fallbackHome],
     ["roomsPage", F.fallbackRoomsPage],
     ["diningPage", F.fallbackDiningPage],
-    ["spaPage", F.fallbackSpaPage],
+    ["gardensPage", F.fallbackGardensPage],
     ["experiencesPage", F.fallbackExperiencesPage],
     ["galleryPage", F.fallbackGalleryPage],
     ["contactPage", F.fallbackContactPage],
@@ -85,16 +92,18 @@ async function main() {
     ["room", F.fallbackRooms, (r: { slug: string }) => `room-${r.slug}`],
     ["experience", F.fallbackExperiences, (_: never, i) => `experience-${i + 1}`],
     ["venue", F.fallbackVenues, (_: never, i) => `venue-${i + 1}`],
-    ["treatment", F.fallbackTreatments, (_: never, i) => `treatment-${i + 1}`],
     ["testimonial", F.fallbackTestimonials, (_: never, i) => `testimonial-${i + 1}`],
   ];
 
-  const rows = [
+  const allRows = [
     ...singletons.map(([id, doc]) => ({ id, type: "singleton", sort: 0, published: swapImages(doc, images), draft: null, deleted_at: null })),
     ...collections.flatMap(([type, items, idFor]) =>
       items.map((item, i) => ({ id: idFor(item as never, i), type, sort: (i + 1) * 10, published: swapImages(item, images), draft: null, deleted_at: null })),
     ),
   ];
+
+  const rows = allRows.filter((r) => !keep.has(r.id));
+  if (keep.size) console.log(`Keeping as they are: ${[...keep].join(", ")}`);
 
   console.log(`Writing ${rows.length} content rows (${overwrite ? "overwrite" : "keep existing"})…`);
   const { data, error } = await db
@@ -103,6 +112,18 @@ async function main() {
     .select("id");
   if (error) throw new Error(error.message);
   console.log(`  ${data.length} written, ${rows.length - data.length} already existed.`);
+
+  if (prune) {
+    const ids = allRows.map((r) => r.id);
+    const { data: stale, error: e } = await db
+      .from("content")
+      .update({ deleted_at: new Date().toISOString() })
+      .not("id", "in", `(${ids.join(",")})`)
+      .is("deleted_at", null)
+      .select("id");
+    if (e) throw new Error(e.message);
+    console.log(stale.length ? `Moved to trash: ${stale.map((r) => r.id).join(", ")}` : "Nothing to move to trash.");
+  }
   await clearSiteCache();
   console.log("Done.");
 }

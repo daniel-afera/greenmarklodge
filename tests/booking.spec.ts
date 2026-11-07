@@ -24,7 +24,7 @@ test.describe("booking API", () => {
   test.beforeEach(({}, info) => test.skip(info.project.name !== "desktop", "API only; run once."));
 
   test("accepts a room that exists in the CMS", async ({ request }) => {
-    const res = await request.post("/api/booking", { data: booking("garden-villa"), headers: { "x-forwarded-for": "10.0.0.1" } });
+    const res = await request.post("/api/booking", { data: booking("vip-villa"), headers: { "x-forwarded-for": "10.0.0.1" } });
     expect(res.status()).toBe(200);
     expect((await res.json()).ok).toBe(true);
   });

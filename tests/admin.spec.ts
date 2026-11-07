@@ -150,22 +150,22 @@ test("a deleted published item leaves the site and comes back when restored", as
 test("rooms can't share a web address", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "Writes a draft; run once.");
   const db = admin();
-  const id = "room-highland-room";
+  const id = "room-single-room";
   const { data: before } = await db.from("content").select("draft").eq("id", id).single();
   try {
     await signIn(page);
     await page.goto(`/admin/edit/${id}`);
-    await page.getByLabel("Web address").fill("garden-villa");
+    await page.getByLabel("Web address").fill("vip-villa");
     await expect(page.getByRole("status").filter({ hasText: /^Saved.*fix the highlighted field/ })).toBeVisible();
-    await expect(page.getByText("“Garden Villa” already uses this web address")).toBeVisible();
+    await expect(page.getByText("“VIP Villa” already uses this web address")).toBeVisible();
 
     await page.getByRole("button", { name: "Publish", exact: true }).click();
     await expect(page.getByRole("status").filter({ hasText: "already uses the web address" })).toBeVisible();
     const { data } = await db.from("content").select("published").eq("id", id).single();
-    expect((data?.published as { slug: string }).slug).toBe("highland-room");
+    expect((data?.published as { slug: string }).slug).toBe("single-room");
 
     // A unique address clears the warning.
-    await page.getByLabel("Web address").fill("highland-room-2");
+    await page.getByLabel("Web address").fill("single-room-2");
     await expect(page.getByRole("status").filter({ hasText: /^Saved \d/ })).toBeVisible();
     await expect(page.getByText("already uses this web address")).toHaveCount(0);
   } finally {
@@ -176,13 +176,13 @@ test("rooms can't share a web address", async ({ page }, info) => {
 test("custom dropdown: pick a room category with the keyboard; Escape closes only the dropdown", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "Writes a draft; run once.");
   const db = admin();
-  const id = "room-garden-villa";
+  const id = "room-single-room";
   const { data: before } = await db.from("content").select("draft").eq("id", id).single();
   try {
     await signIn(page);
     await page.goto(`/admin/edit/${id}`);
     const category = page.getByRole("combobox", { name: /Category/ });
-    await expect(category).toContainText("Villa");
+    await expect(category).toContainText("Room");
     await expect(page.locator("main select")).toHaveCount(0); // no native dropdowns
 
     // Escape closes the list without leaving the page or changing anything.
@@ -190,18 +190,18 @@ test("custom dropdown: pick a room category with the keyboard; Escape closes onl
     await expect(page.getByRole("listbox")).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("listbox")).toBeHidden();
-    await expect(category).toContainText("Villa");
+    await expect(category).toContainText("Room");
 
-    // Keyboard: open, move to "Suite", pick.
+    // Keyboard: open, move to "Villa", pick.
     await category.focus();
-    await page.keyboard.press("ArrowDown"); // opens on the current choice (Villa)
+    await page.keyboard.press("ArrowDown"); // opens on the current choice (Room)
     await expect(page.getByRole("listbox")).toBeVisible();
-    await page.keyboard.press("ArrowUp"); // Suite is listed first
+    await page.keyboard.press("ArrowUp"); // Villa is listed first
     await page.keyboard.press("Enter");
-    await expect(category).toContainText("Suite");
+    await expect(category).toContainText("Villa");
     await expect(page.getByRole("status").filter({ hasText: /^Saved/ })).toBeVisible();
     const { data } = await db.from("content").select("draft").eq("id", id).single();
-    expect((data?.draft as { category: string }).category).toBe("suite");
+    expect((data?.draft as { category: string }).category).toBe("villa");
   } finally {
     await db.from("content").update({ draft: before?.draft ?? null }).eq("id", id);
   }

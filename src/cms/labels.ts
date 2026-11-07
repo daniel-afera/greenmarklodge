@@ -1,7 +1,7 @@
 import { collections, isCollection, isSingleton, singletons } from "./fields";
 import type { ContentRow } from "./store";
 
-/** Human label for a content row ("Home", "Garden Villa", "New review"). */
+/** Human label for a content row ("Home", "VIP Villa", "New review"). */
 export function rowLabel(row: Pick<ContentRow, "id" | "type" | "draft" | "published">) {
   if (isSingleton(row.id)) return singletons[row.id].label;
   if (!isCollection(row.type)) return row.id;
@@ -18,7 +18,7 @@ export function rowHref(row: Pick<ContentRow, "id" | "type" | "draft" | "publish
     homePage: "/",
     roomsPage: "/rooms",
     diningPage: "/dining",
-    spaPage: "/spa",
+    gardensPage: "/gardens",
     experiencesPage: "/experiences",
     galleryPage: "/gallery",
     contactPage: "/contact",
@@ -28,5 +28,5 @@ export function rowHref(row: Pick<ContentRow, "id" | "type" | "draft" | "publish
     const slug = ((row.draft ?? row.published ?? {}) as { slug?: string }).slug;
     return slug ? `/rooms/${slug}` : "/rooms";
   }
-  return { experience: "/experiences", venue: "/dining", treatment: "/spa", testimonial: "/" }[row.type] ?? "/";
+  return { experience: "/experiences", venue: "/dining", testimonial: "/" }[row.type] ?? "/";
 }

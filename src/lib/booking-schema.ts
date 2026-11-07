@@ -9,7 +9,7 @@ z.config({ jitless: true });
 export type RoomRule = { slug: string; name: string; maxGuests: number };
 
 export const ETAS = ["Morning (before 12:00)", "Afternoon (12:00–17:00)", "Evening (after 17:00)", "Not sure yet"] as const;
-export const SUBJECTS = ["General enquiry", "Table reservation", "Spa booking", "Weddings & events", "Corporate retreat"] as const;
+export const SUBJECTS = ["General enquiry", "Table reservation", "Weddings & events", "Corporate retreat"] as const;
 
 export const MAX_NIGHTS = 30;
 export const MAX_DAYS_AHEAD = 540; // ~18 months

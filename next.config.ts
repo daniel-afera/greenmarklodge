@@ -53,6 +53,13 @@ const nextConfig: NextConfig = {
       ? [{ protocol: "https", hostname: supabaseHost, port: "", pathname: "/storage/v1/object/public/media/**", search: "" }]
       : [],
   },
+  /** Old addresses from before the client's content update (spa removed, rooms renamed). */
+  async redirects() {
+    return [
+      { source: "/spa", destination: "/gardens", permanent: false },
+      ...["lakeside-suite", "garden-villa", "highland-room", "green-mark-residence"].map((slug) => ({ source: `/rooms/${slug}`, destination: "/rooms", permanent: false })),
+    ];
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

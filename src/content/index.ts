@@ -76,7 +76,7 @@ export const fallbackDocs: Record<string, unknown> = {
   homePage: F.fallbackHome,
   roomsPage: F.fallbackRoomsPage,
   diningPage: F.fallbackDiningPage,
-  spaPage: F.fallbackSpaPage,
+  gardensPage: F.fallbackGardensPage,
   experiencesPage: F.fallbackExperiencesPage,
   galleryPage: F.fallbackGalleryPage,
   contactPage: F.fallbackContactPage,
@@ -94,7 +94,7 @@ export const getSettings = cache(() => single<T.SiteSettings>("siteSettings", F.
 export const getHome = cache(() => single<T.HomePage>("homePage", F.fallbackHome));
 export const getRoomsPage = cache(() => single<T.RoomsPage>("roomsPage", F.fallbackRoomsPage));
 export const getDiningPage = cache(() => single<T.DiningPage>("diningPage", F.fallbackDiningPage));
-export const getSpaPage = cache(() => single<T.SpaPage>("spaPage", F.fallbackSpaPage));
+export const getGardensPage = cache(() => single<T.GardensPage>("gardensPage", F.fallbackGardensPage));
 export const getExperiencesPage = cache(() => single<T.ExperiencesPage>("experiencesPage", F.fallbackExperiencesPage));
 export const getGalleryPage = cache(() => single<T.GalleryPage>("galleryPage", F.fallbackGalleryPage));
 export const getContactPage = cache(() => single<T.ContactPage>("contactPage", F.fallbackContactPage));
@@ -106,7 +106,6 @@ export const getRooms = cache(async () => {
 export const getRoom = async (slug: string) => (await getRooms()).find((r) => r.slug === slug);
 export const getExperiences = cache(() => list<T.Experience>("experience", F.fallbackExperiences));
 export const getVenues = cache(() => list<T.Venue>("venue", F.fallbackVenues));
-export const getTreatments = cache(() => list<T.Treatment>("treatment", F.fallbackTreatments));
 export const getTestimonials = cache(() => list<T.Testimonial>("testimonial", F.fallbackTestimonials));
 
 /** Slim room list for the booking bar, wizard and API. */
@@ -116,11 +115,11 @@ export const getRoomOptions = cache(async (): Promise<T.RoomOption[]> =>
 
 /** Route → preview image for the full-screen menu (each page's header photo). */
 export const getMenuPreviews = cache(async (): Promise<T.MenuPreviews> => {
-  const [home, rooms, dining, spa, exp, gallery, contact] = await Promise.all([
+  const [home, rooms, dining, gardens, exp, gallery, contact] = await Promise.all([
     getHome(),
     getRooms(),
     getDiningPage(),
-    getSpaPage(),
+    getGardensPage(),
     getExperiencesPage(),
     getGalleryPage(),
     getContactPage(),
@@ -129,7 +128,7 @@ export const getMenuPreviews = cache(async (): Promise<T.MenuPreviews> => {
     "/": home.intro.imageLarge,
     "/rooms": rooms[0]?.images[0] ?? home.hero.image,
     "/dining": dining.hero.image,
-    "/spa": spa.hero.image,
+    "/gardens": gardens.hero.image,
     "/experiences": exp.hero.image,
     "/gallery": gallery.hero.image,
     "/contact": contact.hero.image,

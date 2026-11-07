@@ -9,16 +9,18 @@ import ButtonLink from "@/components/ui/ButtonLink";
 import { EASE_LUXE } from "@/lib/motion";
 import { cms } from "@/cms/mark";
 
-const filters: { key: "all" | Room["category"]; label: string }[] = [
-  { key: "all", label: "All residences" },
-  { key: "suite", label: "Suites" },
+const allFilters: { key: "all" | Room["category"]; label: string }[] = [
+  { key: "all", label: "All" },
   { key: "villa", label: "Villas" },
   { key: "room", label: "Rooms" },
 ];
 
 export default function RoomList({ rooms }: { rooms: Room[] }) {
-  const [filter, setFilter] = useState<(typeof filters)[number]["key"]>("all");
+  const [filter, setFilter] = useState<(typeof allFilters)[number]["key"]>("all");
   const shown = rooms.filter((r) => filter === "all" || r.category === filter);
+  // Only offer categories that have rooms; no tabs at all when there's just one kind.
+  const used = allFilters.filter((f) => f.key !== "all" && rooms.some((r) => r.category === f.key));
+  const filters = used.length > 1 ? allFilters.filter((f) => f.key === "all" || used.includes(f)) : [];
 
   return (
     <>

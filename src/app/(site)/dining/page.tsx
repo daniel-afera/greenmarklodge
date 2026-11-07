@@ -21,7 +21,7 @@ export default async function DiningPage() {
     <>
       <PageHero hero={page.hero} doc="diningPage" />
 
-      <section className="container-luxe py-[clamp(96px,12vw,170px)]">
+      <section className="container-luxe py-[clamp(72px,9vw,128px)]">
         <WordHighlight className="mx-auto max-w-[1100px] text-center font-serif text-[clamp(28px,3.4vw,50px)] font-light leading-[1.25]" text={page.statement} cms={cms("diningPage", "statement")} />
       </section>
 

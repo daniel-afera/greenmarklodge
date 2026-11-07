@@ -8,8 +8,8 @@ import { titleLines } from "@/lib/title";
 import type { Hero } from "@/content/types";
 import { cms } from "@/cms/mark";
 
-/** Full-bleed hero for inner pages: Ken Burns image, masked title, scroll fade. */
-/** `doc` (e.g. "spaPage") marks the hero for on-site editing; overrides (eyebrow/title props) aren't editable here. */
+/** Full-bleed hero for inner pages: Ken Burns image, masked title, scroll fade. Only the heading sits on the photo; `hero.text` is the page description for search engines and link previews. */
+/** `doc` (e.g. "gardensPage") marks the hero for on-site editing; overrides (eyebrow/title props) aren't editable here. */
 export default function PageHero({ hero, doc, eyebrow, title, tall = false }: { hero: Hero; doc?: string; eyebrow?: string; title?: string; tall?: boolean }) {
   const m = (f: string) => cms(doc, `hero.${f}`);
   const ref = useRef<HTMLElement>(null);
@@ -30,11 +30,6 @@ export default function PageHero({ hero, doc, eyebrow, title, tall = false }: { 
           </div>
           <MaskText as="h1" immediate lines={titleLines(title ?? hero.title)} className="display text-[clamp(52px,8vw,128px)] leading-[0.94]" cms={title ? undefined : m("title")} />
         </div>
-        {hero.text && (
-          <p className="rise-fade max-w-[400px] text-[15px] leading-[1.9] text-ivory/85" style={{ "--d": "0.4s", "--rise": "24px" } as React.CSSProperties} {...m("text")}>
-            {hero.text}
-          </p>
-        )}
       </motion.div>
     </section>
   );

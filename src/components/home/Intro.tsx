@@ -26,7 +26,7 @@ export default function Intro({ intro }: { intro: HomePage["intro"] }) {
             </p>
           </Reveal>
           <Reveal delay={0.1}>
-            <Link href="/experiences" className="hlink eyebrow text-ink" {...cms("homePage", "intro.linkLabel")}>
+            <Link href="/gardens" className="hlink eyebrow text-ink" {...cms("homePage", "intro.linkLabel")}>
               {intro.linkLabel}
             </Link>
           </Reveal>

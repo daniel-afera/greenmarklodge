@@ -40,7 +40,7 @@ type Item = { _id?: string };
 export type Room = Item & {
   slug: string;
   name: string;
-  category: "suite" | "villa" | "room";
+  category: "villa" | "room";
   tag: string;
   view: string;
   bed: string;
@@ -58,7 +58,6 @@ export type RoomOption = Pick<Room, "slug" | "name" | "maxGuests" | "bed" | "vie
 
 export type Experience = Item & { title: string; italic: string; text: string; image: Img; cta: string };
 export type Venue = Item & { name: string; kind: string; hours: string; text: string; image: Img };
-export type Treatment = Item & { name: string; duration: string; text: string };
 export type Testimonial = Item & { text: string; who: string };
 export type Feature = { title: string; text: string };
 export type Stat = { value: string; unit: string; label: string };
@@ -72,21 +71,20 @@ export type HomePage = {
   experiencesSection: { eyebrow: string; title: Title; text: string };
   stats: Stat[];
   dining: SplitCard;
-  spa: SplitCard;
+  gardens: SplitCard;
   gallerySection: { title: Title; linkLabel: string };
   cta: Cta;
 };
 
 export type RoomsPage = { hero: Hero; comfortsEyebrow: string; comfortsTitle: Title; comforts: Feature[]; cta: Cta };
 export type DiningPage = { hero: Hero; statement: string; cta: Cta };
-export type SpaPage = {
+/** Photo card with a short title and text (Gardens page). */
+export type PhotoCard = { image: Img; title: Title; text: string };
+export type GardensPage = {
   hero: Hero;
-  philosophyEyebrow: string;
-  philosophyTitle: Title;
-  philosophyText: string;
-  philosophyImage: Img;
-  menuEyebrow: string;
-  menuTitle: Title;
+  intro: { eyebrow: string; statement: string; image: Img; highlights: string[] };
+  moments: PhotoCard;
+  surroundings: PhotoCard;
   cta: Cta;
 };
 export type ExperiencesPage = { hero: Hero; cta: Cta };

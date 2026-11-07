@@ -5,8 +5,8 @@ import NewsletterForm from "./NewsletterForm";
 import { cms } from "@/cms/mark";
 
 const cols = [
-  { label: "Stay", links: [["Rooms & Suites", "/rooms"], ["Book a stay", "/book"], ["Gallery", "/gallery"]] },
-  { label: "Discover", links: [["Dining", "/dining"], ["Spa & Wellness", "/spa"], ["Experiences", "/experiences"]] },
+  { label: "Stay", links: [["Rooms & Villas", "/rooms"], ["Book a stay", "/book"], ["Gallery", "/gallery"]] },
+  { label: "Discover", links: [["Dining", "/dining"], ["The Gardens", "/gardens"], ["Experiences", "/experiences"]] },
   { label: "Lodge", links: [["Contact", "/contact"], ["Weddings & events", "/contact"], ["Careers", "/contact"]] },
 ] as const;
 
@@ -17,7 +17,7 @@ export default function Footer({ settings: s }: { settings: SiteSettings }) {
         <div className="grid gap-12 border-b border-ivory/10 pb-16 md:grid-cols-2 lg:grid-cols-4">
           <div className="max-w-[520px] lg:col-span-2">
             <p className="mb-7 font-serif text-[clamp(30px,3vw,44px)] font-light leading-[1.15]">
-              Letters from <em>the lake</em> — seasonal offers, quietly delivered.
+              Letters from <em>the garden</em> — seasonal offers, quietly delivered.
             </p>
             <NewsletterForm />
           </div>

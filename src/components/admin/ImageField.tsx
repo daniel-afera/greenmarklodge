@@ -49,7 +49,7 @@ export function AltInput({ value, onChange }: { value: string; onChange: (v: str
       <span>
         <label htmlFor={id}>Description (for screen readers & search)</label>
       </span>
-      <input id={id} type="text" maxLength={200} value={value} placeholder="e.g. Suite terrace overlooking the lake at sunset" onChange={(e) => onChange(e.target.value)} />
+      <input id={id} type="text" maxLength={200} value={value} placeholder="e.g. Villa terrace among the gardens at sunset" onChange={(e) => onChange(e.target.value)} />
     </div>
   );
 }

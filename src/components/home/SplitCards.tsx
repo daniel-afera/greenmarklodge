@@ -4,8 +4,8 @@ import { titleInline } from "@/lib/title";
 import type { SplitCard } from "@/content/types";
 import { cms } from "@/cms/mark";
 
-/** Home page cards; `key` is the field in homePage ("dining" | "spa"). */
-export default function DiningSpa({ cards }: { cards: { key: string; card: SplitCard }[] }) {
+/** Home page cards; `key` is the field in homePage ("dining" | "gardens"). */
+export default function SplitCards({ cards }: { cards: { key: string; card: SplitCard }[] }) {
   return (
     <section className="grid gap-1 md:grid-cols-2">
       {cards.map(({ key, card: it }) => {

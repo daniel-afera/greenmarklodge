@@ -17,5 +17,5 @@ export function setIn<T>(obj: T, path: Path, value: unknown): T {
   return base as T;
 }
 
-/** Only same-site paths, e.g. "/rooms/garden-villa" (never "//evil.com" or "https://…"). */
+/** Only same-site paths, e.g. "/rooms/vip-villa" (never "//evil.com" or "https://…"). */
 export const safePath = (to: string | null) => (to && /^\/(?!\/)[\w\-./?=&%#]*$/.test(to) ? to : "/");
