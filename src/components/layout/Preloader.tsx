@@ -1,76 +1,66 @@
 "use client";
 
-import { animate, motion } from "motion/react";
+import { animate } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { EASE_CURTAIN, getLenis, intro } from "@/lib/motion";
+import { getLenis } from "@/lib/motion";
 import Logo from "@/components/ui/Logo";
 import { fullName } from "@/lib/site";
 import { useSite } from "./SiteContext";
 
-/** Full-screen intro on first load: monogram draws, counter runs, curtain lifts. */
+/** How long the CSS intro takes (lift delay + duration in globals.css), in ms. */
+const INTRO_MS = 1650;
+
+/**
+ * Full-screen intro, shown only on the first home-page visit of a tab
+ * (html[data-intro], set by the inline script in src/app/layout.tsx).
+ * The animation is CSS (.preloader in globals.css), so it plays and lifts
+ * on time even while JavaScript is still loading. JS only runs the counter,
+ * pauses smooth scrolling meanwhile, and removes the overlay afterwards.
+ */
 export default function Preloader() {
   const [gone, setGone] = useState(false);
   const { settings: site } = useSite();
   const countRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
+    // No intro this visit: the overlay is display:none (CSS), nothing to do.
+    if (!document.documentElement.hasAttribute("data-intro")) return;
     const raf = requestAnimationFrame(() => getLenis()?.stop());
     const controls = animate(0, 100, {
-      duration: 1.6,
+      duration: 0.9,
       ease: [0.65, 0, 0.35, 1],
       onUpdate: (v) => {
         if (countRef.current) countRef.current.textContent = String(Math.round(v)).padStart(3, "0");
       },
     });
+    const done = window.setTimeout(() => {
+      getLenis()?.start();
+      setGone(true);
+    }, INTRO_MS);
     return () => {
       cancelAnimationFrame(raf);
       controls.stop();
+      window.clearTimeout(done);
+      getLenis()?.start();
     };
   }, []);
 
   if (gone) return null;
 
   return (
-    <motion.div
-      aria-hidden="true"
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-6 bg-ink text-ivory"
-      initial={{ y: 0 }}
-      animate={{ y: "-100%" }}
-      transition={{ duration: 1.05, ease: EASE_CURTAIN, delay: 1.8 }}
-      onAnimationComplete={() => {
-        intro.played = true;
-        getLenis()?.start();
-        setGone(true);
-      }}
-    >
+    <div aria-hidden="true" className="preloader fixed inset-0 z-[100] flex-col items-center justify-center gap-6 bg-ink text-ivory">
       <div className="relative grid size-33 place-items-center">
         <svg width="132" height="132" viewBox="0 0 132 132" fill="none" className="absolute inset-0">
-          <motion.circle
-            cx="66"
-            cy="66"
-            r="64"
-            stroke="#C9A46A"
-            strokeWidth="1"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1.4, ease: [0.65, 0, 0.35, 1], delay: 0.1 }}
-          />
+          <circle className="preloader-ring" cx="66" cy="66" r="64" stroke="#C9A46A" strokeWidth="1" />
         </svg>
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, ease: [0.65, 0, 0.35, 1], delay: 0.4 }}>
+        <div className="preloader-logo">
           <Logo size={112} priority />
-        </motion.div>
+        </div>
       </div>
-      <motion.div
-        className="font-serif text-[22px] uppercase"
-        initial={{ opacity: 0, letterSpacing: "0.7em" }}
-        animate={{ opacity: 1, letterSpacing: "0.42em" }}
-        transition={{ duration: 1.2, ease: "easeOut", delay: 0.45 }}
-      >
-        {fullName(site)}
-      </motion.div>
+      <div className="preloader-name font-serif text-[22px] uppercase tracking-[0.42em]">{fullName(site)}</div>
       <span ref={countRef} className="absolute bottom-10 right-[clamp(20px,4vw,56px)] font-serif text-[64px] font-light leading-none text-ivory/20">
         000
       </span>
-    </motion.div>
+    </div>
   );
 }

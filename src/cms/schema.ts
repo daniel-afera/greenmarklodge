@@ -9,6 +9,9 @@
 import { z } from "zod";
 import type { Field } from "./fields";
 
+// No `new Function` probe: the site's CSP forbids eval (see src/lib/booking-schema.ts).
+z.config({ jitless: true });
+
 export type Mode = "draft" | "publish";
 
 const imageSchema = z.object({

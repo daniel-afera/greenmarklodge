@@ -60,7 +60,6 @@ function bookingPairs(b: Booking, roomName = b.room): [string, string][] {
     ["Phone", fmtPhone(b.phone)],
     ["Country", countryByCode(b.country)?.name ?? b.country],
     ["Arrival time", b.eta || "—"],
-    ["Airport transfer", b.transfer ? "Yes" : "No"],
     ["Special requests", b.notes || "—"],
   ];
 }

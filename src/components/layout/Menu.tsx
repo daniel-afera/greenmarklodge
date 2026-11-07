@@ -83,7 +83,7 @@ export default function Menu({ onClose }: { onClose: () => void }) {
                         active ? "text-bronze-light" : ""
                       }`}
                     >
-                      <span className="font-sans text-xs tracking-[0.2em] text-ivory/40">0{i + 1}</span>
+                      <span className="font-sans text-xs tracking-[0.2em] text-ivory/60">0{i + 1}</span>
                       {item.label}
                     </Link>
                   </motion.div>

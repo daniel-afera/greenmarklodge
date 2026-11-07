@@ -102,14 +102,15 @@ export default function Calendar({
     return (
       <div key={m} className="min-w-0 flex-1">
         <div className="mb-4 text-center font-serif text-[22px]">{monthLabel(m)}</div>
-        <div className="grid grid-cols-7 text-center" role="row">
+        {/* Plain group of labelled day buttons (each says its full date); arrow keys are handled in onKeyDown. */}
+        <div className="grid grid-cols-7 text-center" aria-hidden="true">
           {WEEKDAYS.map((w) => (
-            <span key={w} className="pb-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted" aria-hidden="true">
+            <span key={w} className="pb-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted">
               {w}
             </span>
           ))}
         </div>
-        <div className="grid grid-cols-7" role="grid" aria-label={monthLabel(m)}>
+        <div className="grid grid-cols-7" role="group" aria-label={monthLabel(m)}>
           {cells.map((d, i) => {
             if (!d) return <span key={`b${i}`} />;
             const disabled = isDisabled(d);
@@ -120,7 +121,7 @@ export default function Calendar({
             const band = (isStart && rangeEnd) ? "left-1/2 right-0" : isEnd || isPreviewEnd ? "left-0 right-1/2" : inRange ? "inset-x-0" : "";
             const label = prettyDate(d, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
             return (
-              <div key={d} className="relative flex h-11 items-center justify-center">
+              <div key={d} className="relative flex h-11 items-center justify-center [@media(max-height:800px)]:h-9">
                 {band && <span aria-hidden="true" className={`absolute inset-y-1 bg-bronze/15 ${band}`} />}
                 <button
                   type="button"
@@ -134,7 +135,7 @@ export default function Calendar({
                     pick(d);
                   }}
                   onPointerEnter={() => setHover(d)}
-                  className={`relative z-[1] flex h-10 w-10 flex-col items-center justify-center rounded-full text-[14px] tabular-nums transition-colors duration-200 ${
+                  className={`relative z-[1] flex h-10 w-10 flex-col [@media(max-height:800px)]:h-8 [@media(max-height:800px)]:w-8 items-center justify-center rounded-full text-[14px] tabular-nums transition-colors duration-200 ${
                     isStart || isEnd
                       ? "bg-ink text-ivory"
                       : isPreviewEnd

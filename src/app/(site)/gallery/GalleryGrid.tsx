@@ -45,7 +45,7 @@ export default function GalleryGrid({ images: gallery }: { images: Img[] }) {
             viewport={{ once: true, margin: "0px 0px -8% 0px" }}
             transition={{ duration: 1.3, ease: EASE_LUXE, delay: (i % 3) * 0.08 }}
           >
-            <CmsImage image={g} sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw" className="h-auto w-full" />
+            <CmsImage image={g} sizes="(min-width:1440px) 430px, (min-width:1024px) calc((92vw - 40px) / 3), (min-width:640px) calc((92vw - 20px) / 2), calc(100vw - 40px)" className="h-auto w-full" />
           </motion.button>
         ))}
       </div>

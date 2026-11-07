@@ -22,6 +22,7 @@ import { guestLabel } from "@/components/forms/GuestField";
 import { useMediaQuery } from "@/components/forms/hooks";
 import { PreviewLinks } from "@/app/(site)/contact/EnquiryForm";
 import SendButton from "./SendButton";
+import DatesIntro from "./DatesIntro";
 import SuccessCheck from "./SuccessCheck";
 import { Arrow } from "@/components/ui/ButtonLink";
 
@@ -40,7 +41,6 @@ type Form = {
   phone: PhoneValue;
   country: string;
   eta: string;
-  transfer: boolean;
   notes: string;
   company: string;
 };
@@ -64,11 +64,13 @@ function initialForm(params: URLSearchParams, rooms: RoomOption[]): Form {
     phone: { country: DEFAULT_COUNTRY, national: "" },
     country: DEFAULT_COUNTRY,
     eta: ETAS[1],
-    transfer: true,
     notes: "",
     company: "",
   };
 }
+
+/** Upper-cases the first character as the guest types ("kalab" → "Kalab"). */
+const capitalizeFirst = (v: string) => v.charAt(0).toUpperCase() + v.slice(1);
 
 const payloadOf = (f: Form) => ({ type: "booking" as const, ...f, phone: toE164(f.phone) });
 
@@ -198,7 +200,7 @@ export default function BookingWizard({ rooms }: { rooms: RoomOption[] }) {
       </aside>
 
       {/* Wizard */}
-      <div className="flex min-w-0 flex-[999_1_600px] flex-col px-[clamp(20px,5vw,88px)] pb-16 pt-32">
+      <div className="flex min-w-0 flex-[999_1_600px] flex-col px-[clamp(20px,5vw,88px)] pt-28 [@media(max-height:800px)]:pt-24">
         <AnimatePresence mode="wait">
           {done ? (
             <motion.section key="done" role="status" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex max-w-[620px] flex-1 flex-col items-start justify-center gap-7 py-10">
@@ -226,7 +228,7 @@ export default function BookingWizard({ rooms }: { rooms: RoomOption[] }) {
             </motion.section>
           ) : (
             <motion.form key="form" exit={{ opacity: 0, y: -20 }} onSubmit={submit} noValidate className="flex flex-1 flex-col">
-              <nav aria-label="Booking steps" className="mb-12">
+              <nav aria-label="Booking steps" className="mb-8 [@media(max-height:800px)]:mb-5">
                 <ol className="grid grid-cols-4 gap-3">
                   {STEPS.map((label, i) => (
                     <li key={label} aria-current={i === step ? "step" : undefined}>
@@ -245,19 +247,15 @@ export default function BookingWizard({ rooms }: { rooms: RoomOption[] }) {
               </nav>
 
               <AnimatePresence mode="wait" custom={dir}>
-                <motion.section key={step} custom={dir} variants={slide} initial="initial" animate="animate" exit="exit" className="flex flex-col gap-9">
+                <motion.section key={step} custom={dir} variants={slide} initial="initial" animate="animate" exit="exit" className="flex flex-col gap-7 [@media(max-height:800px)]:gap-5">
                   {step === 0 && (
                     <>
-                      <header>
-                        <h1 className="display mb-3 text-[clamp(40px,4vw,60px)]">
-                          When will you <em>arrive?</em>
-                        </h1>
-                        <p className="text-[15px] leading-[1.8] text-muted">Choose your dates and party. Nothing is charged — our team confirms availability with you directly.</p>
-                      </header>
+                      <DatesIntro />
 
-                      <div className="grid grid-cols-2 border-y border-ink/15">
+                      {/* On lg+ the summary panel already shows the dates; hiding this keeps the step within one screen. */}
+                      <div className="grid grid-cols-2 border-y border-ink/15 lg:hidden">
                         {(["checkin", "checkout"] as const).map((k, i) => (
-                          <div key={k} className={`py-4 ${i ? "border-l border-ink/15 pl-6" : "pr-6"}`}>
+                          <div key={k} className={`py-3 ${i ? "border-l border-ink/15 pl-6" : "pr-6"}`}>
                             <div className={`eyebrow mb-1.5 text-[10px] ${err(k) ? "text-error" : "text-muted"}`}>{i ? "Departure" : "Arrival"}</div>
                             <div className={`font-serif text-[clamp(22px,2.4vw,30px)] ${form[k] ? "" : "text-muted/60"}`}>
                               {form[k] ? prettyDate(form[k], { weekday: "short", day: "numeric", month: "long" }) : i && form.checkin ? "Select departure" : "Add date"}
@@ -300,7 +298,7 @@ export default function BookingWizard({ rooms }: { rooms: RoomOption[] }) {
                   {step === 1 && (
                     <>
                       <header>
-                        <h1 className="display mb-3 text-[clamp(40px,4vw,60px)]">
+                        <h1 className="display mb-2 text-[clamp(36px,3.4vw,52px)]">
                           Choose your <em>residence</em>
                         </h1>
                         <p className="text-[15px] leading-[1.8] text-muted">
@@ -319,11 +317,11 @@ export default function BookingWizard({ rooms }: { rooms: RoomOption[] }) {
                               aria-checked={on}
                               aria-disabled={!fits}
                               onClick={() => fits && set("room", r.slug)}
-                              className={`group flex w-full items-center gap-5 border p-3.5 text-left transition-all duration-500 ${
+                              className={`group flex w-full items-center gap-5 border p-3.5 text-left [@media(max-height:800px)]:p-2.5 transition-all duration-500 ${
                                 !fits ? "cursor-not-allowed border-ink/10 opacity-50" : on ? "border-ink bg-bronze/10 hover:translate-x-1.5" : "border-ink/15 hover:translate-x-1.5 hover:border-ink/40"
                               } ${on && !fits ? "!border-error !opacity-100" : ""}`}
                             >
-                              <span className="relative h-[88px] w-[120px] shrink-0 overflow-hidden">
+                              <span className="relative h-[88px] w-[120px] shrink-0 overflow-hidden [@media(max-height:800px)]:h-16 [@media(max-height:800px)]:w-24">
                                 <CmsImage image={r.image} alt="" fill sizes="120px" className="object-cover transition-transform duration-700 group-hover:scale-110" />
                               </span>
                               <span className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -358,21 +356,22 @@ export default function BookingWizard({ rooms }: { rooms: RoomOption[] }) {
                   {step === 2 && (
                     <>
                       <header>
-                        <h1 className="display mb-3 text-[clamp(40px,4vw,60px)]">
+                        <h1 className="display mb-2 text-[clamp(36px,3.4vw,52px)]">
                           A little about <em>you</em>
                         </h1>
                         <p className="text-[15px] leading-[1.8] text-muted">So reception can confirm your request and prepare for your arrival. Fields marked * are required.</p>
                       </header>
                       <div className="grid gap-x-8 gap-y-7 sm:grid-cols-2">
-                        <Field id="bk-name" label="Full name *" error={err("name")} valid={ok("name")}>
+                        <Field id="bk-name" label="Name *" error={err("name")} valid={ok("name")}>
                           <input
                             id="bk-name"
                             value={form.name}
-                            onChange={(e) => set("name", e.target.value)}
+                            onChange={(e) => set("name", capitalizeFirst(e.target.value.trimStart()))}
                             onBlur={() => touch("name")}
                             autoComplete="name"
+                            autoCapitalize="words"
                             maxLength={80}
-                            placeholder="First and last name"
+                            placeholder="Your name"
                             aria-invalid={!!err("name")}
                             aria-describedby="bk-name-msg"
                           />
@@ -431,10 +430,6 @@ export default function BookingWizard({ rooms }: { rooms: RoomOption[] }) {
                             triggerClassName="min-h-12 border-b border-ink/28 py-3 text-base hover:border-ink/60 aria-expanded:border-bronze"
                           />
                         </Field>
-                        <label className="flex min-h-12 cursor-pointer items-center gap-3.5 self-end border-b border-ink/15 py-3">
-                          <input type="checkbox" checked={form.transfer} onChange={(e) => set("transfer", e.target.checked)} className="h-5 w-5 accent-ink" />
-                          <span className="text-sm">Airport transfer from Bole International</span>
-                        </label>
                       </div>
                       <Field id="bk-notes" label="Special requests" error={err("notes")} counter={{ value: form.notes.length, max: NOTES_MAX }}>
                         <textarea
@@ -454,7 +449,7 @@ export default function BookingWizard({ rooms }: { rooms: RoomOption[] }) {
                   {step === 3 && (
                     <>
                       <header>
-                        <h1 className="display mb-3 text-[clamp(40px,4vw,60px)]">
+                        <h1 className="display mb-2 text-[clamp(36px,3.4vw,52px)]">
                           Review your <em>request</em>
                         </h1>
                         <p className="text-[15px] leading-[1.8] text-muted">This sends your request straight to our reception team. You&apos;ll receive a copy by email.</p>
@@ -470,7 +465,6 @@ export default function BookingWizard({ rooms }: { rooms: RoomOption[] }) {
                             ["Phone", phoneDisplay, 2],
                             ["Country", countryName, 2],
                             ["Arrival", form.eta, 2],
-                            ["Airport transfer", form.transfer ? "Yes, please" : "No", 2],
                           ] as const
                         ).map(([k, v, s]) => (
                           <div key={k} className="flex items-end justify-between gap-4 border-b border-ink/10 py-4">
@@ -499,7 +493,9 @@ export default function BookingWizard({ rooms }: { rooms: RoomOption[] }) {
                 </p>
               )}
 
-              <div className="mt-auto flex flex-wrap items-center justify-between gap-4 pt-14">
+              <div aria-hidden="true" className="min-h-8 flex-1" />
+              {/* Pinned to the bottom of the screen so Continue never needs a scroll. */}
+              <div className="sticky bottom-0 z-10 -mx-[clamp(20px,5vw,88px)] flex flex-wrap items-center justify-between gap-4 border-t border-ink/10 bg-ivory/95 px-[clamp(20px,5vw,88px)] py-4 backdrop-blur-sm">
                 {step > 0 ? (
                   <button type="button" onClick={() => go(step - 1)} className="eyebrow min-h-11 text-muted transition-colors hover:text-ink">
                     ← Previous

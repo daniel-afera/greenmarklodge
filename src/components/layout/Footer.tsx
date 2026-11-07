@@ -52,7 +52,7 @@ export default function Footer({ settings: s }: { settings: SiteSettings }) {
         <div className="grid grid-cols-2 gap-8 py-14 md:grid-cols-4">
           {cols.map((c) => (
             <nav key={c.label} aria-label={`Footer ${c.label}`} className="flex flex-col">
-              <span className="eyebrow mb-4 text-ivory/40">{c.label}</span>
+              <span className="eyebrow mb-4 text-ivory/60">{c.label}</span>
               {c.links.map(([label, href]) => (
                 <Link key={label} href={href} className="text-sm leading-[2.2] text-ivory/70 transition-colors hover:text-bronze-light">
                   {label}
@@ -62,7 +62,7 @@ export default function Footer({ settings: s }: { settings: SiteSettings }) {
           ))}
           {s.social.length > 0 && (
             <nav aria-label="Social" className="flex flex-col" {...cms("siteSettings", "social")}>
-              <span className="eyebrow mb-4 text-ivory/40">Follow</span>
+              <span className="eyebrow mb-4 text-ivory/60">Follow</span>
               {s.social.map((l) => (
                 <a key={l.label} href={l.href} target="_blank" rel="noreferrer" className="text-sm leading-[2.2] text-ivory/70 transition-colors hover:text-bronze-light">
                   {l.label}
@@ -72,9 +72,12 @@ export default function Footer({ settings: s }: { settings: SiteSettings }) {
           )}
         </div>
 
-        <div aria-hidden="true" className="select-none overflow-hidden whitespace-nowrap text-center font-serif text-[clamp(28px,9vw,150px)] font-light uppercase leading-[0.9] tracking-[0.08em] text-ivory/[0.06]">
-          {s.name}
-        </div>
+        {/* Watermark drawn by CSS (::before) so it's decoration, not low-contrast page text. */}
+        <div
+          aria-hidden="true"
+          data-text={s.name}
+          className="select-none overflow-hidden whitespace-nowrap text-center font-serif text-[clamp(28px,9vw,150px)] font-light uppercase leading-[0.9] tracking-[0.08em] text-ivory/[0.06] before:content-[attr(data-text)]"
+        />
         <div className="mt-10 flex flex-wrap justify-between gap-4 text-xs text-ivory/60">
           <span>
             © {new Date().getFullYear()} {fullName(s)}

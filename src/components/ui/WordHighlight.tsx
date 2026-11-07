@@ -4,10 +4,13 @@ import { motion, useScroll, useTransform, type MotionValue } from "motion/react"
 import { useRef } from "react";
 
 function Word({ word, progress, range }: { word: string; progress: MotionValue<number>; range: [number, number] }) {
-  const opacity = useTransform(progress, range, [0.14, 1]);
+  // Starts at 0.55, not fainter: unlit words still meet the 3:1 contrast minimum for large text.
+  const opacity = useTransform(progress, range, [0.55, 1]);
   return (
     <span className="relative">
-      <motion.span style={{ opacity }}>{word}</motion.span>{" "}
+      <motion.span data-word style={{ opacity }}>
+        {word}
+      </motion.span>{" "}
     </span>
   );
 }

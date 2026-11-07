@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { isSupportedCountry, isValidPhoneNumber } from "libphonenumber-js";
 
+// Zod probes `new Function` to compile validators; our CSP forbids eval, so the
+// probe shows up as a CSP violation in the browser. These forms are tiny — skip it.
+z.config({ jitless: true });
+
 /** What the rules need to know about each room (comes from the content layer). */
 export type RoomRule = { slug: string; name: string; maxGuests: number };
 
@@ -14,14 +18,12 @@ export const MESSAGE_MAX = 2000;
 
 const NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M}\s.'’-]*$/u;
 
-const name = (fullName: boolean) =>
-  z
-    .string()
-    .trim()
-    .min(2, { error: "Please enter your name" })
-    .max(80, { error: "That name is a little long — 80 characters max" })
-    .regex(NAME_RE, { error: "Please use letters only" })
-    .refine((v) => !fullName || v.split(/\s+/).filter(Boolean).length >= 2, { error: "Please enter your first and last name" });
+const name = z
+  .string()
+  .trim()
+  .min(2, { error: "Please enter your name" })
+  .max(80, { error: "That name is a little long — 80 characters max" })
+  .regex(NAME_RE, { error: "Please use letters only" });
 
 const email = z
   .string()
@@ -46,12 +48,11 @@ const bookingBase = z.object({
     adults: z.number().int().min(1, { error: "At least one adult is required" }).max(8),
     children: z.number().int().min(0).max(6),
     room: z.string().min(1, { error: "Choose a residence" }),
-    name: name(true),
+    name,
     email,
     phone,
     country,
     eta: z.enum(ETAS, { error: "Choose an arrival time" }),
-    transfer: z.boolean(),
     notes: z.string().trim().max(NOTES_MAX, { error: `Please keep requests under ${NOTES_MAX} characters` }).default(""),
     company: z.string().optional(), // honeypot
 });
@@ -64,7 +65,7 @@ export const makeBookingSchema = (rooms: RoomRule[]) =>
 
 export const enquirySchema = z.object({
   type: z.literal("enquiry"),
-  name: name(false),
+  name,
   email,
   phone: z
     .string()

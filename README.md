@@ -20,7 +20,7 @@ npm run build && npm start   # production
 
 Contact-page enquiries use the same route (`type: "enquiry"`, reference `EQ-XXXXXX`).
 
-The route also has a honeypot field and a basic in-memory rate limit (6 requests / 10 min / IP).
+The route also has a honeypot field and a rate limit stored in Supabase (`src/lib/rate-limit.ts`): 6 requests / 10 min per visitor, and at most 300 sent emails a day across the site (Gmail allows about 500).
 
 **Demo mode:** when `SMTP_HOST` is not set, mail goes to a temporary [Ethereal](https://ethereal.email) inbox. The success screen then shows links to preview both emails, which is useful for showing the client. For real delivery, fill in the SMTP values. With Gmail, use an App Password.
 

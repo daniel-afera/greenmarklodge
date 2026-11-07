@@ -10,6 +10,3 @@ export const setLenis = (l: Lenis | null) => {
   lenis = l;
 };
 export const getLenis = () => lenis;
-
-/** True once the first-load preloader has finished (hero waits for it). */
-export const intro = { played: false };

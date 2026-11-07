@@ -5,13 +5,14 @@ import Reveal from "@/components/ui/Reveal";
 import WordHighlight from "@/components/ui/WordHighlight";
 import CtaBand from "@/components/ui/CtaBand";
 import ButtonLink from "@/components/ui/ButtonLink";
-import { getDiningPage, getVenues } from "@/content";
+import { getDiningPage, getVenues, getSettings } from "@/content";
+import { pageMeta } from "@/lib/seo";
 import { titlePlain } from "@/lib/title";
 import { cms } from "@/cms/mark";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const p = await getDiningPage();
-  return { title: p.hero.eyebrow, description: p.hero.text ?? titlePlain(p.hero.title) };
+  const [p, s] = await Promise.all([getDiningPage(), getSettings()]);
+  return pageMeta(s, { title: p.hero.eyebrow, description: p.hero.text ?? titlePlain(p.hero.title), path: "/dining", image: p.hero.image });
 }
 
 export default async function DiningPage() {

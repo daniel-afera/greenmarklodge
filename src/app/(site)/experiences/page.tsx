@@ -3,13 +3,14 @@ import PageHero from "@/components/ui/PageHero";
 import ParallaxImage from "@/components/ui/ParallaxImage";
 import Reveal from "@/components/ui/Reveal";
 import CtaBand from "@/components/ui/CtaBand";
-import { getExperiences, getExperiencesPage } from "@/content";
+import { getExperiences, getExperiencesPage, getSettings } from "@/content";
+import { pageMeta } from "@/lib/seo";
 import { titlePlain } from "@/lib/title";
 import { cms } from "@/cms/mark";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const p = await getExperiencesPage();
-  return { title: p.hero.eyebrow, description: p.hero.text ?? titlePlain(p.hero.title) };
+  const [p, s] = await Promise.all([getExperiencesPage(), getSettings()]);
+  return pageMeta(s, { title: p.hero.eyebrow, description: p.hero.text ?? titlePlain(p.hero.title), path: "/experiences", image: p.hero.image });
 }
 
 export default async function ExperiencesPage() {

@@ -197,7 +197,8 @@ html.lenis body {
     flex-direction: column;
     gap: 8px;
   }
-  .field > span:first-child {
+  .field > span:first-child,
+  .field > label:first-child {
     font: 500 10px var(--font-sans);
     letter-spacing: 0.28em;
     text-transform: uppercase;
@@ -296,6 +297,88 @@ html.lenis body {
   animation: cue 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
 
+/*
+ * First-load intro, in CSS so it runs before (and without) JavaScript.
+ * An inline script in <head> (src/app/layout.tsx) sets html[data-intro] on the
+ * first home-page visit of a tab; only then is the preloader shown, and hero
+ * text waits for its curtain to lift. Elsewhere hero text rises right away.
+ */
+:root {
+  --intro-base: 0.25s;
+}
+html[data-intro] {
+  --intro-base: 1.15s;
+}
+@keyframes rise-mask {
+  from {
+    transform: translateY(110%);
+  }
+}
+@keyframes rise-fade {
+  from {
+    opacity: 0;
+    transform: translateY(var(--rise, 20px));
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+/* Hero headline lines rise out of their mask. --d = this line's extra delay. */
+.rise-mask {
+  animation: rise-mask 1.4s var(--ease-luxe) calc(var(--intro-base) + var(--d, 0s)) both;
+}
+.rise-fade {
+  animation: rise-fade 1.2s var(--ease-luxe) calc(var(--intro-base) + var(--d, 0s)) both;
+}
+.fade-in {
+  animation: fade-in 1s ease calc(var(--intro-base) + var(--d, 0s)) both;
+}
+
+/* Preloader: hidden unless this visit plays the intro. */
+.preloader {
+  display: none;
+}
+html[data-intro] .preloader {
+  display: flex;
+  animation: preloader-lift 0.8s var(--ease-curtain) 0.85s both;
+}
+@keyframes preloader-lift {
+  to {
+    transform: translateY(-100%);
+    visibility: hidden;
+  }
+}
+.preloader-ring {
+  stroke-dasharray: 403;
+  stroke-dashoffset: 403;
+  animation: preloader-ring 0.9s cubic-bezier(0.65, 0, 0.35, 1) 0.05s forwards;
+}
+@keyframes preloader-ring {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.preloader-logo {
+  animation: preloader-logo 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.1s both;
+}
+@keyframes preloader-logo {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+.preloader-name {
+  animation: preloader-name 0.9s ease-out 0.15s both;
+}
+@keyframes preloader-name {
+  from {
+    opacity: 0;
+    letter-spacing: 0.7em;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -303,5 +386,10 @@ html.lenis body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  .rise-mask,
+  .rise-fade,
+  .fade-in {
+    animation-delay: 0s !important;
   }
 }

@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
 import Reveal from "@/components/ui/Reveal";
 import CtaBand from "@/components/ui/CtaBand";
-import { getRooms, getRoomsPage } from "@/content";
+import { getRooms, getRoomsPage, getSettings } from "@/content";
+import { pageMeta } from "@/lib/seo";
 import { titleInline, titlePlain } from "@/lib/title";
 import RoomList from "./RoomList";
 import { cms } from "@/cms/mark";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const p = await getRoomsPage();
-  return { title: p.hero.eyebrow, description: p.hero.text ?? titlePlain(p.hero.title) };
+  const [p, s] = await Promise.all([getRoomsPage(), getSettings()]);
+  return pageMeta(s, { title: p.hero.eyebrow, description: p.hero.text ?? titlePlain(p.hero.title), path: "/rooms", image: p.hero.image });
 }
 
 export default async function RoomsPage() {

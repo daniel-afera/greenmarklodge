@@ -1,24 +1,32 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useId, useState } from "react";
 import { changePassword, signIn } from "@/cms/staff-actions";
 
-/** Password input with a Show/Hide toggle. Focus stays in the field when toggling. */
-function PasswordInput(props: Omit<React.InputHTMLAttributes<HTMLInputElement>, "type">) {
+/**
+ * Labelled password field with a Show/Hide toggle. Focus stays in the field when
+ * toggling. The toggle sits outside the <label>, so the field's accessible name
+ * is just the label ("Password"), not "Password Show password".
+ */
+function PasswordField({ label, ...props }: { label: string } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "id">) {
   const [shown, setShown] = useState(false);
+  const id = useId();
   return (
-    <div className="relative">
-      <input {...props} type={shown ? "text" : "password"} className="pr-16" autoCapitalize="off" autoCorrect="off" spellCheck={false} />
-      <button
-        type="button"
-        onMouseDown={(e) => e.preventDefault()}
-        onClick={() => setShown((s) => !s)}
-        aria-pressed={shown}
-        aria-label={shown ? "Hide password" : "Show password"}
-        className="absolute inset-y-0 right-0 px-1 text-[10px] font-medium uppercase tracking-[0.28em] text-muted transition-colors hover:text-ink focus-visible:text-ink"
-      >
-        {shown ? "Hide" : "Show"}
-      </button>
+    <div className="field">
+      <label htmlFor={id}>{label}</label>
+      <div className="relative">
+        <input {...props} id={id} type={shown ? "text" : "password"} className="pr-16" autoCapitalize="off" autoCorrect="off" spellCheck={false} />
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => setShown((s) => !s)}
+          aria-pressed={shown}
+          aria-label={shown ? "Hide password" : "Show password"}
+          className="absolute inset-y-0 right-0 px-1 text-[10px] font-medium uppercase tracking-[0.28em] text-muted transition-colors hover:text-ink focus-visible:text-ink"
+        >
+          {shown ? "Hide" : "Show"}
+        </button>
+      </div>
     </div>
   );
 }
@@ -53,10 +61,7 @@ export function LoginForm() {
           <span>Email</span>
           <input name="email" type="email" autoComplete="username" required defaultValue={state?.email} />
         </label>
-        <label className="field">
-          <span>Password</span>
-          <PasswordInput name="password" autoComplete="current-password" required />
-        </label>
+        <PasswordField label="Password" name="password" autoComplete="current-password" required />
         <ErrorText text={state?.error} />
         <button className="btn btn-ink mt-2" disabled={pending}>
           <span>{pending ? "Signing in…" : "Sign in"}</span>
@@ -72,14 +77,8 @@ export function PasswordForm({ forced }: { forced: boolean }) {
   return (
     <Shell title="New password" intro={forced ? "You signed in with a temporary password. Choose your own to continue." : "Choose a new password."}>
       <form action={action} className="flex flex-col gap-7">
-        <label className="field">
-          <span>New password (10+ characters)</span>
-          <PasswordInput name="password" autoComplete="new-password" minLength={10} required />
-        </label>
-        <label className="field">
-          <span>Repeat it</span>
-          <PasswordInput name="confirm" autoComplete="new-password" minLength={10} required />
-        </label>
+        <PasswordField label="New password (10+ characters)" name="password" autoComplete="new-password" minLength={10} required />
+        <PasswordField label="Repeat it" name="confirm" autoComplete="new-password" minLength={10} required />
         <ErrorText text={state?.error} />
         <button className="btn btn-ink mt-2" disabled={pending}>
           <span>{pending ? "Saving…" : "Save password"}</span>

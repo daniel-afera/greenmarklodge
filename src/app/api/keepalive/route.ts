@@ -21,5 +21,9 @@ export async function GET(req: Request) {
     console.error("[keepalive]", error.message);
     return Response.json({ ok: false }, { status: 502 });
   }
+  // Housekeeping: rate-limit windows are at most a day long.
+  const stale = new Date(Date.now() - 2 * 86_400_000).toISOString();
+  const purge = await db.from("rate_limits").delete().lt("window_start", stale);
+  if (purge.error) console.error("[keepalive] rate_limits purge", purge.error.message);
   return Response.json({ ok: true, at });
 }

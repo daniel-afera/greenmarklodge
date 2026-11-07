@@ -39,6 +39,7 @@ export default function Cursor() {
   return (
     <motion.div
       aria-hidden="true"
+      data-no-js-hide
       className="pointer-events-none fixed left-0 top-0 z-[120] hidden mix-blend-normal pointer-fine:block"
       style={{ x: sx, y: sy }}
     >

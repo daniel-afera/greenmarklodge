@@ -49,7 +49,7 @@ export default function NewsletterForm() {
               aria-invalid={!!error}
               aria-describedby="newsletter-msg"
               placeholder="Your email address"
-              className="min-w-0 flex-1 bg-transparent py-4 text-[15px] text-ivory placeholder:text-ivory/45 focus:outline-none"
+              className="min-w-0 flex-1 bg-transparent py-4 text-[15px] text-ivory placeholder:text-ivory/60 focus:outline-none"
             />
             <button type="submit" className="eyebrow min-h-11 text-bronze-light transition-colors hover:text-ivory">
               Subscribe

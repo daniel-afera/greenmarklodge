@@ -2,15 +2,17 @@ import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
 import Reveal from "@/components/ui/Reveal";
 import { getContactPage, getSettings } from "@/content";
+import { pageMeta } from "@/lib/seo";
 import { telHref } from "@/lib/site";
 import { titleInline } from "@/lib/title";
 import EnquiryForm from "./EnquiryForm";
+import MapEmbed from "./MapEmbed";
 import { cms } from "@/cms/mark";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: "Get in touch with our reservations team.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [p, s] = await Promise.all([getContactPage(), getSettings()]);
+  return pageMeta(s, { title: "Contact", description: "Get in touch with our reservations team.", path: "/contact", image: p.hero.image });
+}
 
 export default async function ContactPage() {
   const [page, s] = await Promise.all([getContactPage(), getSettings()]);
@@ -42,11 +44,7 @@ export default async function ContactPage() {
               </p>
             )}
           </div>
-          {s.mapEmbed && (
-            <div className="h-[320px] overflow-hidden border border-ink/10 grayscale-[0.6] transition-[filter] duration-700 hover:grayscale-0">
-              <iframe title="Map" src={s.mapEmbed} className="h-full w-full" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
-            </div>
-          )}
+          {s.mapEmbed && <MapEmbed src={s.mapEmbed} address={`${s.address.line1}, ${s.address.line2}, ${s.address.country}`} cms={cms("siteSettings", "mapEmbed")} />}
         </Reveal>
 
         <Reveal delay={0.1}>

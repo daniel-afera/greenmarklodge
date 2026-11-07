@@ -3,26 +3,13 @@ import { enquirySchema, fieldErrors, makeBookingSchema } from "@/lib/booking-sch
 import { getRoomOptions, getSettings } from "@/content";
 import { guestBookingEmail, receptionBookingEmail, receptionEnquiryEmail } from "@/lib/email-templates";
 import { receptionEmail, send } from "@/lib/mailer";
-
-// Simple in-memory rate limit: 6 submissions / 10 minutes / IP.
-const hits = new Map<string, number[]>();
-const WINDOW = 10 * 60_000;
-const LIMIT = 6;
-
-function limited(ip: string) {
-  const now = Date.now();
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW);
-  recent.push(now);
-  hits.set(ip, recent);
-  return recent.length > LIMIT;
-}
+import { siteLimited, visitorLimited } from "@/lib/rate-limit";
 
 const makeRef = (prefix: string) => `${prefix}-${randomUUID().replace(/-/g, "").slice(0, 6).toUpperCase()}`;
 
 export async function POST(req: Request) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-  if (limited(ip)) {
-    return Response.json({ ok: false, error: "Too many requests — please try again shortly." }, { status: 429 });
+  if (await visitorLimited(req)) {
+    return Response.json({ ok: false, error: "Too many requests — please try again in a few minutes." }, { status: 429 });
   }
 
   let body: unknown;
@@ -43,6 +30,10 @@ export async function POST(req: Request) {
   // Honeypot: pretend success for bots.
   if (parsed.data.company) {
     return Response.json({ ok: true, ref: makeRef("AB") });
+  }
+
+  if (await siteLimited()) {
+    return Response.json({ ok: false, error: "We can't take more online requests today. Please call or email us directly." }, { status: 429 });
   }
 
   try {

@@ -5,8 +5,10 @@ import type { ReactNode } from "react";
 import { EASE_LUXE } from "@/lib/motion";
 
 /**
- * Each line rises out of an invisible mask. `immediate` plays on mount
- * (heroes); otherwise it plays when scrolled into view.
+ * Each line rises out of an invisible mask. `immediate` (heroes) plays on
+ * first paint as a CSS animation (.rise-mask in globals.css), so the headline
+ * never waits for JavaScript; `delay` is added to the shared intro base.
+ * Otherwise it plays with motion when scrolled into view.
  */
 export default function MaskText({
   lines,
@@ -25,10 +27,24 @@ export default function MaskText({
   as?: "h1" | "h2" | "h3" | "p";
   cms?: { "data-cms"?: string };
 }) {
+  if (immediate) {
+    const Plain = as;
+    return (
+      <Plain className={className} {...cms}>
+        {lines.map((line, i) => (
+          <span key={i} className="block overflow-hidden pb-[0.08em]">
+            <span className="rise-mask block" style={{ "--d": `${delay + i * stagger}s` } as React.CSSProperties}>
+              {line}
+            </span>
+          </span>
+        ))}
+      </Plain>
+    );
+  }
+
   const Tag = motion[as];
-  const trigger = immediate ? { animate: "show" } : { whileInView: "show", viewport: { once: true, margin: "0px 0px -10% 0px" } };
   return (
-    <Tag className={className} initial="hidden" {...trigger} {...cms}>
+    <Tag className={className} initial="hidden" whileInView="show" viewport={{ once: true, margin: "0px 0px -10% 0px" }} {...cms}>
       {lines.map((line, i) => (
         <span key={i} className="block overflow-hidden pb-[0.08em]">
           <motion.span

@@ -5,13 +5,14 @@ import Reveal from "@/components/ui/Reveal";
 import MaskText from "@/components/ui/MaskText";
 import CtaBand from "@/components/ui/CtaBand";
 import ButtonLink from "@/components/ui/ButtonLink";
-import { getSpaPage, getTreatments } from "@/content";
+import { getSpaPage, getTreatments, getSettings } from "@/content";
+import { pageMeta } from "@/lib/seo";
 import { titleInline, titleLines, titlePlain } from "@/lib/title";
 import { cms } from "@/cms/mark";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const p = await getSpaPage();
-  return { title: p.hero.eyebrow, description: p.hero.text ?? titlePlain(p.hero.title) };
+  const [p, s] = await Promise.all([getSpaPage(), getSettings()]);
+  return pageMeta(s, { title: p.hero.eyebrow, description: p.hero.text ?? titlePlain(p.hero.title), path: "/spa", image: p.hero.image });
 }
 
 export default async function SpaPage() {

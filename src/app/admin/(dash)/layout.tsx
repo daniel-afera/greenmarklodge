@@ -26,7 +26,8 @@ export default async function DashLayout({ children }: LayoutProps<"/admin">) {
   return (
     <>
       <Sidebar items={items} name={staff.name} role={staff.role} siteName={settings.name} />
-      <main className="px-5 py-8 sm:px-10 lg:ml-64 lg:py-10">{children}</main>
+      {/* Room for the fixed "Publish all" bar, so it never covers the last row of content. */}
+      <main className={`px-5 py-8 sm:px-10 lg:ml-64 lg:py-10 ${rows.length ? "pb-32 lg:pb-32" : ""}`}>{children}</main>
       <PublishAll count={rows.length} />
     </>
   );

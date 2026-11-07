@@ -1,17 +1,31 @@
 "use client";
 
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 import { EASE_CURTAIN, EASE_LUXE } from "@/lib/motion";
 import { useSite } from "@/components/layout/SiteContext";
 
-/** Runs on every navigation: an ink curtain wipes up, then the page fades in. */
+/** False until the first page has mounted; templates remount on every navigation. */
+let mountedOnce = false;
+
+/**
+ * Runs on every client-side navigation: an ink curtain wipes up, then the page
+ * fades in. Skipped on the first load (the server-rendered page shows at once,
+ * which keeps the hero photo — the LCP — visible from the first paint).
+ */
 export default function Template({ children }: { children: React.ReactNode }) {
   const { settings: site, editing } = useSite();
-  if (editing) return <>{children}</>;
+  const [firstLoad] = useState(() => !mountedOnce);
+  useEffect(() => {
+    mountedOnce = true;
+  }, []);
+
+  if (editing || firstLoad) return <>{children}</>;
   return (
     <>
       <motion.div
         aria-hidden="true"
+        data-curtain
         className="pointer-events-none fixed inset-0 z-[80] flex items-center justify-center bg-ink"
         initial={{ clipPath: "inset(0% 0% 0% 0%)" }}
         animate={{ clipPath: "inset(0% 0% 100% 0%)" }}

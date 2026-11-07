@@ -19,14 +19,16 @@ The website is done and pushed to `github.com/KalabGebru/green-mark-lodge` (priv
   - `POST /api/booking` emails reception and the guest (`src/lib/mailer.ts`, `src/lib/email-templates.ts`).
   - Without SMTP settings, mail goes to an Ethereal test inbox, and the success screen shows preview links.
 - **Content and editor (Supabase):** done 4 Nov 2026. See the README sections "Editing content" and "Supabase setup".
-  - Supabase project `ieuygasvvzgtsizjsfro`, region eu-west-1 (Ireland). Scripts connect through the session pooler `aws-0-eu-west-1.pooler.supabase.com`, because the direct DB host is IPv6-only and this machine has no IPv6.
+  - **Production Supabase project `vvrrrbnmrefezqpflsaz`** (the client's account), region eu-central-1 (Frankfurt). Moved here on 7 Nov 2026 from the old dev project `ieuygasvvzgtsizjsfro` (eu-west-1), which can be deleted once the live site runs on the new one. Content, photos and both logins were copied (passwords kept).
+  - Scripts connect through the session pooler, set as `SUPABASE_DB_HOST=aws-1-eu-central-1.pooler.supabase.com` in `.env` (the direct DB host is IPv6-only and this machine has no IPv6). Without it, scripts default to the old eu-west-1 pooler and fail.
+  - The two logins are test accounts (`test@email.com` owner, `test2@gmail.com` editor). Create the client's real owner with `npm run create-owner`, then delete these.
   - Keys live in `.env`, not `.env.local`. Scripts: `npm run migrate | seed | create-owner | test:e2e`.
   - Pages read content through `src/content/index.ts` → `src/cms/db.ts`. Published content is cached with the tag `content`. Edit mode (draft mode plus a signed-in staff member) reads drafts. With no config or on errors, the built-in `src/content/fallback.ts` is used.
   - `/admin`: login, a forced password change, sidebar dashboard, autosaving forms built from `src/cms/fields.ts`, Publish / Publish all, sortable lists, staff management (owner only), and a **Photos** page (`/admin/media`): storage used vs the 1 GB free limit, every file with where it's used (published or draft), filter by unused, owner-only delete (usage re-checked on the server). Photo fields have **Choose from library** (`MediaPicker.tsx`) to reuse a stored photo.
   - On-site editing: elements carry `data-cms="doc:path"` (via `cms()` in `src/cms/mark.ts`). `EditMode.tsx` is mounted only in edit mode; it draws the hover outline, opens popovers (reusing the admin `FieldView`), and has the edit bar.
   - Photos are shrunk in the browser (`src/cms/image-prep.ts`) and uploaded with signed URLs (`src/cms/upload.ts`).
   - **Titles:** use `/` for a new line and `*italic*`; rendered by `src/lib/title.tsx`.
-- **Tests:** `npm run build && npm run test:e2e`. Playwright, desktop and mobile, 40 tests, all passing on 4 Nov 2026. They run against the real Supabase project with a temporary owner account.
+- **Tests:** `npm run build && npm run test:e2e`. Playwright, desktop and mobile, 50 passing (16 desktop-only skipped on mobile) on 7 Nov 2026. They run against the **production** Supabase project with a temporary owner account and clean up after themselves. A failed run can leave a draft or `uploads/e2e/` photos behind: check the admin's Unpublished count afterwards.
 - **Sanity:** tried, then removed by decision. Don't bring it back.
 
 ## Next up
@@ -51,21 +53,24 @@ The website is done and pushed to `github.com/KalabGebru/green-mark-lodge` (priv
 - [x] Replaced or removed photos stay in the `media` bucket. Owners now delete unused ones on the Photos page (5 Nov 2026).
 - [ ] No database backups on the free plan. Add a weekly `content` export, or upgrade to Pro.
 - [x] Room web addresses (5 Nov 2026): autosave warns on the field when another room uses the same `slug`; publishing (and restoring a deleted room) is blocked until it's unique, and a room can't be published without one.
-- [ ] Use a Supabase table for the booking rate limit (from the audit).
+- [x] Booking rate limit in Supabase (7 Nov 2026): `public.rate_limits` + `rate_limit_hit()` (`src/lib/rate-limit.ts`). 6 requests / 10 min per visitor (hashed IP), and 300 sent emails a day site-wide (counted only for valid requests). Falls back to memory if Supabase errors. The daily keep-alive purges old rows.
 
 ## Later (before launch)
 
 - [ ] **Real content:** swap in the client's name, text, prices (`[RATE]`), sizes (`[SIZE]`), residence count (`[00]`), reviews (`[Guest name]`), phone and email, through `/admin` or edit mode. (Name, logo and photos are done.) Optionally update `src/content/fallback.ts` too, since it's the fallback.
 - [ ] **Site improvements from the audit:** do these after the real content is in (see **Site audit** below).
-- [ ] **Real email:** fill `SMTP_*`, `MAIL_FROM` and `RECEPTION_EMAIL` in `.env` and on Vercel. For Gmail, use an App Password.
-- [ ] **Deploy:** Vercel project → env vars (Supabase URL, publishable and secret keys, `CRON_SECRET`; not the DB password) → custom domain → set `NEXT_PUBLIC_SITE_URL`. Set the function region to Dublin (`dub1`) to sit next to the eu-west-1 database.
+- [x] **Real email** (7 Nov 2026): Gmail `greenmarklodge.support@gmail.com` sends and receives (App Password; login verified). Copy the `SMTP_*`, `MAIL_FROM` and `RECEPTION_EMAIL` values to Vercel.
+- [ ] **Deploy:** Vercel project → env vars (Supabase URL, publishable and secret keys, `CRON_SECRET`, the email settings; not the DB password) → custom domain → set `NEXT_PUBLIC_SITE_URL` (sitemap, robots, canonical and share URLs all use it). Set the function region to Frankfurt (`fra1`) to sit next to the eu-central-1 database.
+- [ ] **After deploy:** submit `https://<domain>/sitemap.xml` in Google Search Console; check a page in Google's Rich Results Test (Hotel data).
   - **Keep-alive:** the free Supabase plan pauses after ~7 days without activity. `vercel.json` runs `/api/keepalive` daily, which writes the `keepalive` heartbeat row; the admin overview shows the last ping and warns after 3 days. It needs `CRON_SECRET` on Vercel. Nothing pings while the site isn't deployed (by choice). If the project ever pauses: Supabase dashboard → the project → **Restore**.
 - [x] Flag images (5 Nov 2026): country pickers use SVGs in `public/flags/` (from `flag-icons`, copied by `npx tsx scripts/copy-flags.ts`).
 - [ ] Optional: hook the newsletter signup up to a mailing-list provider (it's UI-only today).
 
-## Site audit (4 Nov 2026)
+## Site audit (4 Nov 2026; fixes done 7 Nov 2026)
 
 Done on a production build (`next start`) with Lighthouse 12.6 at mobile and desktop settings, plus manual checks of headers, SEO files, meta tags, the booking API and how pages behave without JS. The build and type check were clean; lint was not run. Visual design was not reviewed. **Do the fixes after the real client content is in**, then re-run the audit to compare.
+
+**Re-run 7 Nov 2026 (Lighthouse 12.6, simulated, localhost):** accessibility, best practices and SEO are 100 on every page, mobile and desktop. Desktop performance 89–99. Mobile performance 66–84 (see the LCP note above on why the simulated mobile number overstates it).
 
 ### Lighthouse results (Performance / Accessibility / Best practices / SEO)
 
@@ -95,17 +100,19 @@ CLS was ≤ 0.005 everywhere.
 
 ### Fixes, in priority order
 
-- [ ] **Preloader and LCP:** play the preloader only on the first visit to home, and shorten it. Show hero headings immediately instead of masking them in. Target: mobile LCP under 2.5 s.
-- [ ] **SEO:**
+- [x] **Preloader and LCP** (7 Nov 2026): the preloader plays only on the first home visit of a tab (inline script in `src/app/layout.tsx` sets `html[data-intro]`), lasts ~1.65 s instead of ~2.9 s, and is CSS-driven (`.preloader` in `globals.css`). Hero text rises with CSS (`.rise-*`), not JS. The page-change curtain skips the first load. Mobile LCP with real (devtools) throttling: home 2.4 s, rooms 2.1 s, book 1.8 s, contact 2.8 s.
+  - Lighthouse's default *simulated* mobile LCP still reads 4–7 s on localhost: it charges every request that finished before the real LCP, and on localhost everything finishes at once. Re-measure on the deployed site.
+  - New finding: the home page has a lot of JS work on a slow phone (TBT ~1.7 s with devtools throttling): GSAP, Lenis, motion. A possible next step is to lazy-load below-the-fold animated sections.
+- [x] **SEO** (7 Nov 2026): `app/sitemap.ts` (pages + rooms, hourly), `app/robots.ts`, `app/manifest.ts`, Hotel JSON-LD in the site layout (`hotelJsonLd` in `src/lib/seo.ts`; placeholder phone/prices are left out until real), per-page title/description/canonical/OG/Twitter via `pageMeta()`, and a server-rendered `<h1>` on `/book`. Done items:
   - `app/sitemap.ts` and `app/robots.ts`.
   - `Hotel` JSON-LD with the name, address, geo coordinates, phone, rooms and price range.
   - Per-page OG/Twitter title, description and image; canonical URLs.
   - Apple icon and manifest.
   - Render the `/book` heading on the server.
-- [ ] **Security:** add security headers in `next.config.ts`, set `poweredByHeader: false`, and replace the in-memory rate limit with a durable one (a Supabase table once Phase 1 exists).
-- [ ] **Accessibility:** fix the contrast, make the logo's label include its visible text, and restructure the calendar grid (rows of `gridcell`s, or drop the ARIA grid roles and rely on button labels).
-- [ ] **No-JS fallback:** content stays visible when JS doesn't run, for example a `<noscript>` style that resets `opacity` and `transform`, or start states set by a class JS adds.
-- [ ] **Contact map:** load the iframe only when it's near the viewport or tapped, with a static preview first. Tighten the gallery's `sizes`.
+- [x] **Security** (7 Nov 2026): CSP, `X-Frame-Options`, `nosniff`, Referrer-Policy, Permissions-Policy and HSTS in `next.config.ts`; `poweredByHeader: false`; durable rate limit (see above). The CSP allows inline scripts (Next streams data in them; nonces would make every page dynamic), Supabase (admin uploads) and Google Maps (iframe). Zod runs `jitless` so it doesn't probe `eval`. If you add an outside service (analytics, chat), add its origin to the CSP.
+- [x] **Accessibility** (7 Nov 2026): footer/menu labels raised to 60% opacity (5.9:1), scroll-lit words start at 55%, the footer watermark is a CSS pseudo-element, calendar uses labelled `group`s instead of a broken `grid`, and the admin password field's name no longer includes "Show password". Lighthouse accessibility 100 on all pages. Was: fix the contrast, make the logo's label include its visible text, and restructure the calendar grid (rows of `gridcell`s, or drop the ARIA grid roles and rely on button labels).
+- [x] **No-JS fallback** (7 Nov 2026): a `<noscript>` style in `src/app/layout.tsx` undoes motion's hidden start states, and the preloader/curtain never cover the page without JS. Was: content stays visible when JS doesn't run, for example a `<noscript>` style that resets `opacity` and `transform`, or start states set by a class JS adds.
+- [x] **Contact map** (7 Nov 2026): `contact/MapEmbed.tsx` loads the iframe only near the viewport or on tap, with a light placeholder and an "Open in Google Maps" link. Gallery `sizes` capped at 430px. Was: load the iframe only when it's near the viewport or tapped, with a static preview first. Tighten the gallery's `sizes`.
 
 ### Re-running the audit
 

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Hero from "@/components/home/Hero";
 import Intro from "@/components/home/Intro";
@@ -13,7 +14,8 @@ import CtaBand from "@/components/ui/CtaBand";
 import CmsImage from "@/components/ui/CmsImage";
 import { titleLines } from "@/lib/title";
 import { cms } from "@/cms/mark";
-import { getExperiences, getGalleryPage, getHome, getRoomOptions, getRooms, getTestimonials } from "@/content";
+import { getExperiences, getGalleryPage, getHome, getRoomOptions, getRooms, getSettings, getTestimonials } from "@/content";
+import { pageMeta } from "@/lib/seo";
 
 function Star() {
   return (
@@ -21,6 +23,11 @@ function Star() {
       <path d="M9 0 V18 M0 9 H18 M2.6 2.6 L15.4 15.4 M15.4 2.6 L2.6 15.4" />
     </svg>
   );
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const [home, s] = await Promise.all([getHome(), getSettings()]);
+  return pageMeta(s, { path: "/", image: s.shareImage ?? home.hero.image });
 }
 
 export default async function Home() {

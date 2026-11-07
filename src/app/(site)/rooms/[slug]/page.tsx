@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getRoom, getRooms } from "@/content";
+import { getRoom, getRooms, getSettings } from "@/content";
+import { pageMeta } from "@/lib/seo";
 import PageHero from "@/components/ui/PageHero";
 import ParallaxImage from "@/components/ui/ParallaxImage";
 import Reveal from "@/components/ui/Reveal";
@@ -18,8 +19,9 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps<"/rooms/[slug]">): Promise<Metadata> {
-  const room = await getRoom((await params).slug);
-  return room ? { title: room.name, description: room.description } : {};
+  const { slug } = await params;
+  const [room, s] = await Promise.all([getRoom(slug), getSettings()]);
+  return room ? pageMeta(s, { title: room.name, description: room.short || room.description, path: `/rooms/${room.slug}`, image: room.images[0] }) : {};
 }
 
 export default async function RoomPage({ params }: PageProps<"/rooms/[slug]">) {

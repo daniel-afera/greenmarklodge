@@ -16,7 +16,6 @@ const booking = (room: string) => ({
   phone: "+251911234567",
   country: "ET",
   eta: "Not sure yet",
-  transfer: false,
   notes: "",
   company: "bot", // honeypot → no email
 });

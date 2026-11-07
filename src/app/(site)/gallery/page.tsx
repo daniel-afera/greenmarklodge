@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
-import { getGalleryPage } from "@/content";
+import { getGalleryPage, getSettings } from "@/content";
+import { pageMeta } from "@/lib/seo";
 import GalleryGrid from "./GalleryGrid";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const p = await getGalleryPage();
-  return { title: p.hero.eyebrow };
+  const [p, s] = await Promise.all([getGalleryPage(), getSettings()]);
+  return pageMeta(s, { title: p.hero.eyebrow, description: p.hero.text, path: "/gallery", image: p.hero.image });
 }
 
 export default async function GalleryPage() {
