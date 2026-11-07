@@ -1,0 +1,11 @@
+# Uploaded by `vercel deploy` (no Git): send only what the build needs.
+node_modules
+.next
+.git
+.env*
+!.env.example
+client-assets
+test-results
+playwright-report
+tests
+*.tsbuildinfo
