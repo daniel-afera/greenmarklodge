@@ -75,6 +75,7 @@ export default function Header() {
             <nav aria-label="Quick links" className="hidden gap-8 text-xs uppercase tracking-[0.14em] lg:flex">
               <Link className="hlink" href="/rooms" data-active={pathname.startsWith("/rooms")}>Stay</Link>
               <Link className="hlink" href="/dining" data-active={pathname === "/dining"}>Dine</Link>
+              <Link className="hlink" href="/events" data-active={pathname === "/events"}>Events</Link>
               <Link className="hlink" href="/gardens" data-active={pathname === "/gardens"}>Gardens</Link>
             </nav>
           </div>

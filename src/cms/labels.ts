@@ -19,6 +19,7 @@ export function rowHref(row: Pick<ContentRow, "id" | "type" | "draft" | "publish
     roomsPage: "/rooms",
     diningPage: "/dining",
     gardensPage: "/gardens",
+    eventsPage: "/events",
     experiencesPage: "/experiences",
     galleryPage: "/gallery",
     contactPage: "/contact",

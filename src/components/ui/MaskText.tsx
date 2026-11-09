@@ -32,7 +32,7 @@ export default function MaskText({
     return (
       <Plain className={className} {...cms}>
         {lines.map((line, i) => (
-          <span key={i} className="block overflow-hidden pb-[0.08em]">
+          <span key={i} className="block pb-[0.08em] [clip-path:inset(0_-100vw_-0.3em_0)]">
             <span className="rise-mask block" style={{ "--d": `${delay + i * stagger}s` } as React.CSSProperties}>
               {line}
             </span>
@@ -46,7 +46,7 @@ export default function MaskText({
   return (
     <Tag className={className} initial="hidden" whileInView="show" viewport={{ once: true, margin: "0px 0px -10% 0px" }} {...cms}>
       {lines.map((line, i) => (
-        <span key={i} className="block overflow-hidden pb-[0.08em]">
+        <span key={i} className="block pb-[0.08em] [clip-path:inset(0_-100vw_-0.3em_0)]">
           <motion.span
             className="block"
             variants={{ hidden: { y: "110%" }, show: { y: 0 } }}

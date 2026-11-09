@@ -56,6 +56,7 @@ export function readDoc(id: string, draft: boolean) {
   return safe(`doc ${id}`, () => (draft ? queryDoc(id, true) : cachedDoc(id)));
 }
 
-export function readList(type: string, draft: boolean) {
-  return safe(`list ${type}`, () => (draft ? queryList(type, true) : cachedList(type)));
+/** `fresh` skips the data cache (the booking API re-checks a room it can't find). */
+export function readList(type: string, draft: boolean, fresh = false) {
+  return safe(`list ${type}`, () => (draft || fresh ? queryList(type, draft) : cachedList(type)));
 }

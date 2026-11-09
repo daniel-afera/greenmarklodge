@@ -7,6 +7,7 @@ import type {
   ContactPage,
   DiningPage,
   Experience,
+  EventsPage,
   ExperiencesPage,
   GalleryPage,
   GardensPage,
@@ -150,28 +151,28 @@ export const fallbackExperiences: Experience[] = [
     italic: "ceremony",
     text: "Green beans washed, roasted and ground by hand, poured in three rounds — abol, tona, baraka. The way Ethiopia has welcomed guests for centuries.",
     image: img("garden-event-2", "Evening gathering in the garden"),
-    cta: "Reserve a ceremony",
+    images: [img("garden-event", "Celebration in the garden"), img("lounge", "The lounge"), img("garden-restaurant", "Garden restaurant under the canopy")],
   },
   {
     title: "Garden",
     italic: "walks",
     text: "Wander the pathways of our botanical gardens among greenery, flowers and diverse plant life. Stop for a photograph, or simply sit and enjoy the quiet.",
     image: img("gardens", "The lodge gardens"),
-    cta: "Explore the gardens",
+    images: [img("gardens-2", "Paths through the gardens"), img("green-path", "A green path"), img("greenery", "Greenery in the gardens")],
   },
   {
     title: "Sunrise to",
     italic: "sunset",
     text: "Gentle morning light over the gardens, and in the evening the warm colours of sunset filtering through the greenery — the loveliest hours to be outdoors.",
     image: img("sunset", "Sunset over the cottages"),
-    cta: "Plan your day",
+    images: [img("sunset-2", "Sunset over the cottages"), img("cottage-terrace", "Cottage terrace opening onto the garden"), img("cottages", "Round thatched cottages")],
   },
   {
     title: "Explore the",
     italic: "surroundings",
     text: "Beyond the gardens, discover nearby natural attractions, lakes and interesting destinations. Ask our team about sightseeing and local experiences.",
     image: img("tree-drive", "Tree-lined drive through the grounds"),
-    cta: "Ask our team",
+    images: [img("garden-drive", "Drive through the gardens"), img("entrance-drive", "The entrance drive"), img("main-building-2", "The main building")],
   },
 ];
 
@@ -208,7 +209,7 @@ export const fallbackVenues: Venue[] = [
 const defaultCta = { image: img("cottage-terrace", "Cottage terrace opening onto the garden"), eyebrow: "Reserve your stay", title: "Your peaceful escape, / *surrounded by nature*" };
 
 export const fallbackHome: HomePage = {
-  hero: { image: img("main-building", "Green Mark Lodge main building among the trees"), eyebrow: "Botanical gardens · Bishoftu", title: "Experience Nature. / *Enjoy Comfort.* / Discover Tranquility." },
+  hero: { image: img("main-building", "Green Mark Lodge main building among the trees"), eyebrow: "Botanical gardens · Bishoftu", title: "Experience Nature. / *Discover Tranquility.*" },
   intro: {
     label: "Welcome",
     statement:
@@ -305,6 +306,37 @@ export const fallbackGardensPage: GardensPage = {
   cta: { image: img("gardens", "The lodge gardens"), eyebrow: "Stay in the gardens", title: "Wake up / *in the gardens*" },
 };
 
+export const fallbackEventsPage: EventsPage = {
+  hero: {
+    image: img("garden-event", "Celebration in the garden"),
+    eyebrow: "Events",
+    title: "Celebrate / *in the gardens*",
+    text: "Weddings, christenings, birthdays and meetings at Green Mark Lodge in Bishoftu — garden venues and a meeting hall, arranged by our team.",
+  },
+  intro: {
+    eyebrow: "Gatherings",
+    statement: "From a wedding under the trees to a quiet meeting in our hall — we host the days that matter, with food, flowers and space to gather.",
+  },
+  celebrations: {
+    eyebrow: "Celebrations",
+    title: "Your day, / *our gardens*",
+    items: [
+      { image: img("garden-event", "Celebration in the garden"), title: "Weddings", local: "ሰርግ", text: "Ceremony and reception among the gardens, with catering and space for family and friends." },
+      { image: img("garden-event-2", "Evening gathering in the garden"), title: "Christenings", local: "ክርስትና", text: "A calm, green setting to welcome a new member of the family, with food and coffee for your guests." },
+      { image: img("garden-restaurant", "Garden restaurant under the canopy"), title: "Birthdays", local: "ልደት", text: "Birthdays and anniversaries in the garden or restaurant — tell us the occasion and we'll prepare it." },
+    ],
+  },
+  meetings: {
+    eyebrow: "Meeting hall",
+    title: "Meet / *among the trees*",
+    text: "Our meeting hall is available to book for meetings, workshops and training days, with refreshments and lunch from our kitchen.",
+    image: img("main-building-3", "The main building"),
+    highlights: ["Meetings and workshops", "Training and team days", "Coffee breaks and lunch", "Rooms for overnight guests"],
+    linkLabel: "Book the meeting hall",
+  },
+  cta: { image: img("gardens-2", "The lodge gardens"), eyebrow: "Plan your event", title: "Tell us about / *your occasion*" },
+};
+
 export const fallbackExperiencesPage: ExperiencesPage = {
   hero: {
     image: img("garden-event", "Celebration in the garden"),
@@ -312,6 +344,7 @@ export const fallbackExperiencesPage: ExperiencesPage = {
     title: "Days shaped by / *nature*",
     text: "Coffee ceremonies, garden walks and sunsets at Green Mark Lodge — arrange any of them with reception.",
   },
+  slides: [img("gardens", "The lodge gardens"), img("sunset", "Sunset over the cottages"), img("garden-event-2", "Evening gathering in the garden"), img("green-path", "A green path")],
   cta: { ...defaultCta, image: img("sunset-2", "Sunset over the cottages") },
 };
 

@@ -5,6 +5,7 @@ export const nav = [
   { label: "The Lodge", href: "/" },
   { label: "Rooms & Villas", href: "/rooms" },
   { label: "Dining", href: "/dining" },
+  { label: "Events", href: "/events" },
   { label: "The Gardens", href: "/gardens" },
   { label: "Experiences", href: "/experiences" },
   { label: "Gallery", href: "/gallery" },

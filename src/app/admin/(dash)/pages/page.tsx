@@ -5,7 +5,7 @@ import { unpublishedRows } from "@/cms/store";
 
 export const metadata = { title: "Pages" };
 
-const PAGES = ["homePage", "roomsPage", "diningPage", "gardensPage", "experiencesPage", "contactPage"] as const;
+const PAGES = ["homePage", "roomsPage", "diningPage", "eventsPage", "gardensPage", "experiencesPage", "contactPage"] as const;
 
 export default async function PagesList() {
   await requireUser();

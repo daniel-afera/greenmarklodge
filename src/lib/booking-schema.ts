@@ -9,7 +9,7 @@ z.config({ jitless: true });
 export type RoomRule = { slug: string; name: string; maxGuests: number };
 
 export const ETAS = ["Morning (before 12:00)", "Afternoon (12:00–17:00)", "Evening (after 17:00)", "Not sure yet"] as const;
-export const SUBJECTS = ["General enquiry", "Table reservation", "Weddings & events", "Corporate retreat"] as const;
+export const SUBJECTS = ["General enquiry", "Table reservation", "Weddings & events", "Meeting hall", "Corporate retreat"] as const;
 
 export const MAX_NIGHTS = 30;
 export const MAX_DAYS_AHEAD = 540; // ~18 months
@@ -57,6 +57,14 @@ const bookingBase = z.object({
     company: z.string().optional(), // honeypot
 });
 
+/** The residence preselected in the hero bar and wizard: Standard Villa when offered. */
+export const DEFAULT_ROOM = "standard-villa";
+export const defaultRoom = (rooms: { slug: string }[]) => (rooms.some((r) => r.slug === DEFAULT_ROOM) ? DEFAULT_ROOM : (rooms[0]?.slug ?? ""));
+
+/** Default stay: arrive tomorrow, leave three days later. */
+export const DEFAULT_ARRIVAL_IN = 1;
+export const DEFAULT_NIGHTS = 3;
+
 /** Booking rules for the current list of rooms. */
 export const makeBookingSchema = (rooms: RoomRule[]) =>
   bookingBase.superRefine((d, ctx) => {
@@ -80,8 +88,6 @@ export const enquirySchema = z.object({
     .max(MESSAGE_MAX, { error: `Please keep it under ${MESSAGE_MAX} characters` }),
   company: z.string().optional(), // honeypot
 });
-
-export const newsletterSchema = z.object({ email });
 
 export type BookingInput = z.input<typeof bookingBase>;
 export type Booking = z.output<typeof bookingBase>;

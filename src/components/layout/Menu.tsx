@@ -66,8 +66,8 @@ export default function Menu({ onClose }: { onClose: () => void }) {
                 // masks the slide-in like overflow-hidden would, but leaves room under the line
                 // for descenders (g, y) without making rows taller.
                 // Height term: 100svh minus top bar (~89px), page padding (≤144px) and gaps (24px),
-                // shared by 7 rows at line-height 1.1 → the list fills the screen without scrolling.
-                <li key={item.href} className="font-serif text-[clamp(34px,min(6.5vw,calc((100svh_-_260px)_/_7.8)),96px)] [clip-path:inset(0_-100vw_-0.3em_0)]">
+                // shared by 8 rows at line-height 1.1 → the list fills the screen without scrolling.
+                <li key={item.href} className="font-serif text-[clamp(30px,min(6vw,calc((100svh_-_260px)_/_8.9)),92px)] [clip-path:inset(0_-100vw_-0.3em_0)]">
                   <motion.div
                     initial={{ y: "110%" }}
                     animate={{ y: 0 }}

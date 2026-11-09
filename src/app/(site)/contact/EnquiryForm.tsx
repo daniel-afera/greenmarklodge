@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { emailSuggestion, enquirySchema, fieldErrors, MESSAGE_MAX, SUBJECTS } from "@/lib/booking-schema";
 import { DEFAULT_COUNTRY } from "@/lib/countries";
 import SendButton from "@/components/booking/SendButton";
@@ -16,8 +16,24 @@ type Form = { name: string; email: string; phone: PhoneValue; subject: string; m
 const empty: Form = { name: "", email: "", phone: { country: DEFAULT_COUNTRY, national: "" }, subject: SUBJECTS[0], message: "", company: "" };
 const payloadOf = (f: Form) => ({ type: "enquiry" as const, ...f, phone: toE164(f.phone) });
 
+const noSubscribe = () => () => {};
+
+/** ?subject=… from the address bar ("" on the server, so the page stays static). */
+function useUrlSubject() {
+  const wanted = useSyncExternalStore(noSubscribe, () => new URLSearchParams(window.location.search).get("subject") ?? "", () => "");
+  return SUBJECTS.find((s) => s === wanted);
+}
+
 export default function EnquiryForm() {
   const [form, setForm] = useState<Form>(empty);
+  // Links such as /contact?subject=Meeting%20hall preselect the subject once,
+  // right after hydration (state adjusted during render, no effect or remount).
+  const urlSubject = useUrlSubject();
+  const [appliedSubject, setAppliedSubject] = useState(false);
+  if (urlSubject && !appliedSubject) {
+    setAppliedSubject(true);
+    setForm((f) => ({ ...f, subject: urlSubject }));
+  }
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [submitted, setSubmitted] = useState(false);
   const [serverErrors, setServerErrors] = useState<Record<string, string>>({});

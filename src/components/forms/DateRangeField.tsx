@@ -12,7 +12,7 @@ import { EASE_LUXE, getLenis } from "@/lib/motion";
 
 function CalendarIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" aria-hidden="true" className="shrink-0 opacity-70">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" aria-hidden="true" className="shrink-0 opacity-70 max-[359px]:hidden">
       <rect x="1.5" y="3" width="15" height="13.5" />
       <path d="M1.5 7 H16.5 M5 1 V4.5 M13 1 V4.5" />
     </svg>

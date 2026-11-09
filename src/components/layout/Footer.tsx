@@ -1,13 +1,12 @@
 import Link from "next/link";
 import type { SiteSettings } from "@/content/types";
 import { fullName, telHref, waHref } from "@/lib/site";
-import NewsletterForm from "./NewsletterForm";
 import { cms } from "@/cms/mark";
 
 const cols = [
   { label: "Stay", links: [["Rooms & Villas", "/rooms"], ["Book a stay", "/book"], ["Gallery", "/gallery"]] },
-  { label: "Discover", links: [["Dining", "/dining"], ["The Gardens", "/gardens"], ["Experiences", "/experiences"]] },
-  { label: "Lodge", links: [["Contact", "/contact"], ["Weddings & events", "/contact"], ["Careers", "/contact"]] },
+  { label: "Discover", links: [["Dining", "/dining"], ["Events", "/events"], ["The Gardens", "/gardens"], ["Experiences", "/experiences"]] },
+  { label: "Lodge", links: [["Contact", "/contact"], ["Weddings & events", "/events"], ["Careers", "/contact"]] },
 ] as const;
 
 export default function Footer({ settings: s }: { settings: SiteSettings }) {
@@ -17,9 +16,11 @@ export default function Footer({ settings: s }: { settings: SiteSettings }) {
         <div className="grid gap-12 border-b border-ivory/10 pb-16 md:grid-cols-2 lg:grid-cols-4">
           <div className="max-w-[520px] lg:col-span-2">
             <p className="mb-7 font-serif text-[clamp(30px,3vw,44px)] font-light leading-[1.15]">
-              Letters from <em>the garden</em> — seasonal offers, quietly delivered.
+              A peaceful escape among <em>botanical gardens</em>.
             </p>
-            <NewsletterForm />
+            <Link href="/book" className="hlink eyebrow text-bronze-light">
+              Request a booking
+            </Link>
           </div>
           <div>
             <div className="eyebrow mb-5 text-bronze-light">Visit</div>
@@ -76,7 +77,7 @@ export default function Footer({ settings: s }: { settings: SiteSettings }) {
         <div
           aria-hidden="true"
           data-text={s.name}
-          className="select-none overflow-hidden whitespace-nowrap text-center font-serif text-[clamp(28px,9vw,150px)] font-light uppercase leading-[0.9] tracking-[0.08em] text-ivory/[0.06] before:content-[attr(data-text)]"
+          className="select-none overflow-hidden whitespace-nowrap text-center font-serif text-[clamp(32px,10.4vw,176px)] font-light uppercase leading-[0.9] tracking-[0.08em] text-ivory/[0.06] before:content-[attr(data-text)]"
         />
         <div className="mt-10 flex flex-wrap justify-between gap-4 text-xs text-ivory/60">
           <span>

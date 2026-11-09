@@ -84,6 +84,7 @@ async function main() {
     ["roomsPage", F.fallbackRoomsPage],
     ["diningPage", F.fallbackDiningPage],
     ["gardensPage", F.fallbackGardensPage],
+    ["eventsPage", F.fallbackEventsPage],
     ["experiencesPage", F.fallbackExperiencesPage],
     ["galleryPage", F.fallbackGalleryPage],
     ["contactPage", F.fallbackContactPage],

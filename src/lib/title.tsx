@@ -17,6 +17,14 @@ export function titleLines(raw: string): ReactNode[] {
     .map((line, i) => <span key={i}>{inlineTitle(line)}</span>);
 }
 
+/** Stable page anchor for an experience: "The coffee" + "ceremony" → "the-coffee-ceremony". */
+export const experienceAnchor = (e: { title: string; italic: string }) =>
+  `${e.title} ${e.italic}`
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "") || "experience";
+
 /** Single-line rendering (lines joined with a space or <br>). */
 export function titleInline(raw: string, breakLines = false): ReactNode {
   const lines = raw.split(/\s*\/\s*/).filter(Boolean);

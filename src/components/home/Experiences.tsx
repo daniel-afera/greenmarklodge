@@ -1,7 +1,7 @@
 "use client";
 
 import CmsImage from "@/components/ui/CmsImage";
-import { titleLines } from "@/lib/title";
+import { experienceAnchor, titleLines } from "@/lib/title";
 import type { Experience, HomePage } from "@/content/types";
 import Link from "next/link";
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
@@ -39,8 +39,8 @@ function Card({ e, i, total, progress }: { e: Experience; i: number; total: numb
               {e.text}
             </p>
           </div>
-          <Link href="/experiences" className="hlink eyebrow self-start text-ivory" {...cms(e._id, "cta")}>
-            {e.cta}
+          <Link href={`/experiences#${experienceAnchor(e)}`} className="hlink eyebrow self-start text-ivory">
+            See more
           </Link>
         </div>
       </motion.article>

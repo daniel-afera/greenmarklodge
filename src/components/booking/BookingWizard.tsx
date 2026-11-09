@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
 import { parsePhoneNumberFromString, type CountryCode } from "libphonenumber-js";
 import type { RoomOption } from "@/content/types";
-import { makeBookingSchema, type RoomRule, emailSuggestion, ETAS, fieldErrors, MAX_DAYS_AHEAD, MAX_NIGHTS, nightsBetween, NOTES_MAX, stayIssues } from "@/lib/booking-schema";
+import { DEFAULT_ARRIVAL_IN, DEFAULT_NIGHTS, defaultRoom, makeBookingSchema, type RoomRule, emailSuggestion, ETAS, fieldErrors, MAX_DAYS_AHEAD, MAX_NIGHTS, nightsBetween, NOTES_MAX, stayIssues } from "@/lib/booking-schema";
 import { addDaysISO, prettyDate, todayISO } from "@/lib/dates";
 import { countryByCode, DEFAULT_COUNTRY } from "@/lib/countries";
 import { EASE_LUXE } from "@/lib/motion";
@@ -49,9 +49,9 @@ function initialForm(params: URLSearchParams, rooms: RoomOption[]): Form {
   const today = todayISO();
   const ci = params.get("checkin") ?? "";
   const co = params.get("checkout") ?? "";
-  const checkin = ci >= today && ci <= addDaysISO(today, MAX_DAYS_AHEAD) ? ci : addDaysISO(today, 14);
-  const checkout = co > checkin && co <= addDaysISO(checkin, MAX_NIGHTS) ? co : addDaysISO(checkin, 3);
-  const room = rooms.some((r) => r.slug === params.get("room")) ? params.get("room")! : rooms[0].slug;
+  const checkin = ci >= today && ci <= addDaysISO(today, MAX_DAYS_AHEAD) ? ci : addDaysISO(today, DEFAULT_ARRIVAL_IN);
+  const checkout = co > checkin && co <= addDaysISO(checkin, MAX_NIGHTS) ? co : addDaysISO(checkin, DEFAULT_NIGHTS);
+  const room = rooms.some((r) => r.slug === params.get("room")) ? params.get("room")! : defaultRoom(rooms);
   const clamp = (v: string | null, lo: number, hi: number, d: number) => Math.min(hi, Math.max(lo, Number.isFinite(Number(v)) && v ? Number(v) : d));
   return {
     checkin,

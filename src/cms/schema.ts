@@ -64,7 +64,7 @@ function fieldSchema(f: Field, mode: Mode, required: boolean): z.ZodType {
 function objectSchema(fields: Field[], mode: Mode, strictItem: boolean, titleKey?: string) {
   const shape: Record<string, z.ZodType> = {};
   for (const f of fields) {
-    const required = mode === "publish" && strictItem && (f.kind === "image" || f.kind === "images" || f.key === titleKey);
+    const required = mode === "publish" && strictItem && (((f.kind === "image" || f.kind === "images") && !f.optional) || f.key === titleKey);
     const s = fieldSchema(f, mode, required);
     // Missing keys are fine unless required; unknown keys are dropped.
     shape[f.key] = required ? s : s.optional();

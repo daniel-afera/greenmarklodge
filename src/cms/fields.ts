@@ -14,7 +14,7 @@ export type Field =
   | { kind: "number"; key: string; label: string; min?: number; max?: number }
   | { kind: "select"; key: string; label: string; options: { value: string; label: string }[] }
   | { kind: "image"; key: string; label: string; optional?: boolean }
-  | { kind: "images"; key: string; label: string; max?: number }
+  | { kind: "images"; key: string; label: string; max?: number; optional?: boolean }
   | { kind: "strings"; key: string; label: string; itemLabel: string; max?: number }
   | { kind: "group"; key: string; label: string; fields: Field[] }
   | { kind: "list"; key: string; label: string; itemLabel: string; fields: Field[]; max?: number };
@@ -123,7 +123,45 @@ export const singletons = {
       cta,
     ],
   },
-  experiencesPage: { label: "Experiences page", fields: [hero, cta] },
+  eventsPage: {
+    label: "Events page",
+    fields: [
+      hero,
+      { kind: "group", key: "intro", label: "Introduction", fields: [text("eyebrow", "Small heading", 60), para("statement", "Statement", 300)] },
+      {
+        kind: "group",
+        key: "celebrations",
+        label: "Celebrations",
+        fields: [
+          text("eyebrow", "Small heading", 60),
+          title("title"),
+          {
+            kind: "list",
+            key: "items",
+            label: "Celebrations",
+            itemLabel: "Celebration",
+            max: 8,
+            fields: [image("image", "Photo"), title("title"), text("local", "Amharic name", 40), para("text", "Text", 300)],
+          },
+        ],
+      },
+      {
+        kind: "group",
+        key: "meetings",
+        label: "Meeting hall",
+        fields: [
+          text("eyebrow", "Small heading", 60),
+          title("title"),
+          para("text", "Text", 500),
+          image("image", "Photo"),
+          { kind: "strings", key: "highlights", label: "Highlights", itemLabel: "Highlight", max: 8 },
+          text("linkLabel", "Link text", 40),
+        ],
+      },
+      cta,
+    ],
+  },
+  experiencesPage: { label: "Experiences page", fields: [hero, { kind: "images", key: "slides", label: "More header photos (slideshow)", max: 8 }, cta] },
   galleryPage: { label: "Gallery", fields: [hero, { kind: "images", key: "images", label: "Gallery photos", max: 80 }] },
   contactPage: { label: "Contact page", fields: [hero, title("formTitle", "Form title")] },
 } satisfies Record<string, { label: string; fields: Field[] }>;
@@ -156,7 +194,7 @@ export const collections = {
     label: "Experiences",
     singular: "experience",
     titleKey: "title",
-    fields: [text("title", "Title", 60), text("italic", "Italic part", 60), para("text", "Text", 500), image("image", "Photo"), text("cta", "Button text", 40)],
+    fields: [text("title", "Title", 60), text("italic", "Italic part", 60), para("text", "Text", 500), image("image", "Photo"), { kind: "images", key: "images", label: "More photos (tiles)", max: 8, optional: true }],
   },
   venue: {
     label: "Restaurants",

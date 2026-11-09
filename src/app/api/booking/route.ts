@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { enquirySchema, fieldErrors, makeBookingSchema } from "@/lib/booking-schema";
-import { getRoomOptions, getSettings } from "@/content";
+import { getRoomOptions, getRoomOptionsFresh, getSettings } from "@/content";
 import { guestBookingEmail, receptionBookingEmail, receptionEnquiryEmail } from "@/lib/email-templates";
 import { receptionEmail, send } from "@/lib/mailer";
 import { siteLimited, visitorLimited } from "@/lib/rate-limit";
@@ -20,7 +20,16 @@ export async function POST(req: Request) {
   }
 
   const type = (body as { type?: string })?.type;
-  const [site, rooms] = await Promise.all([getSettings(), getRoomOptions()]);
+  const [site, cachedRooms] = await Promise.all([getSettings(), getRoomOptions()]);
+  // The booking page and this route can hold different cached room lists for a
+  // moment after rooms are edited. Before rejecting an unknown room, re-check
+  // against the database itself.
+  let rooms = cachedRooms;
+  const asked = (body as { room?: unknown })?.room;
+  if (type !== "enquiry" && typeof asked === "string" && asked && !rooms.some((r) => r.slug === asked)) {
+    rooms = await getRoomOptionsFresh();
+    console.warn("[booking] room not in cached list", { asked, cached: cachedRooms.map((r) => r.slug), fresh: rooms.map((r) => r.slug) });
+  }
   const schema = type === "enquiry" ? enquirySchema : makeBookingSchema(rooms);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {

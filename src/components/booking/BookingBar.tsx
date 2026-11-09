@@ -10,14 +10,14 @@ import GuestField from "@/components/forms/GuestField";
 import Select from "@/components/forms/Select";
 import type { DateRange } from "@/components/forms/Calendar";
 import { addDaysISO, todayISO } from "@/lib/dates";
-import { stayIssues } from "@/lib/booking-schema";
+import { DEFAULT_ARRIVAL_IN, DEFAULT_NIGHTS, defaultRoom, stayIssues } from "@/lib/booking-schema";
 
 /** Glass booking bar on the hero — hands off to /book with the choices prefilled. */
 export default function BookingBar({ rooms, className = "" }: { rooms: RoomOption[]; className?: string }) {
   const router = useRouter();
-  const [dates, setDates] = useState<DateRange>(() => ({ from: addDaysISO(todayISO(), 14), to: addDaysISO(todayISO(), 17) }));
+  const [dates, setDates] = useState<DateRange>(() => ({ from: addDaysISO(todayISO(), DEFAULT_ARRIVAL_IN), to: addDaysISO(todayISO(), DEFAULT_ARRIVAL_IN + DEFAULT_NIGHTS) }));
   const [guests, setGuests] = useState({ adults: 2, children: 0 });
-  const [room, setRoom] = useState("");
+  const [room, setRoom] = useState(() => defaultRoom(rooms));
   const [error, setError] = useState("");
 
   const cell = "min-w-0 border-b border-ivory/20 px-6 py-3.5 md:border-b-0 md:border-r";
@@ -47,7 +47,7 @@ export default function BookingBar({ rooms, className = "" }: { rooms: RoomOptio
           tone="dark"
           placement="top"
           className="flex-[2_1_300px] md:border-r md:border-ivory/20"
-          segmentClassName="px-6 py-3.5 first:border-r first:border-ivory/20 max-md:border-b max-md:border-ivory/20"
+          segmentClassName="px-6 py-3.5 max-sm:px-4 first:border-r first:border-ivory/20 max-md:border-b max-md:border-ivory/20"
         />
         <GuestField adults={guests.adults} kids={guests.children} onChange={setGuests} className={`flex-[1_1_170px] max-md:hidden ${cell}`} />
         <div className={`flex flex-[1_1_180px] flex-col gap-1.5 max-md:hidden ${cell}`}>
@@ -60,12 +60,12 @@ export default function BookingBar({ rooms, className = "" }: { rooms: RoomOptio
             value={room}
             onChange={setRoom}
             placement="top"
-            options={[{ value: "", label: "Any residence" }, ...rooms.map((r) => ({ value: r.slug, label: r.name, hint: `${r.maxGuests} guests` }))]}
+            options={[{ value: "", label: "Any residence" }, ...rooms.map((r) => ({ value: r.slug, label: r.name}))]}
             triggerClassName="font-serif text-xl min-h-8"
           />
         </div>
         <button type="submit" className="btn btn-gold min-h-16 flex-1 basis-[220px] border-0 md:min-h-[76px]">
-          <span>Check availability</span>
+          <span>Reserve</span>
           <Arrow />
         </button>
       </form>

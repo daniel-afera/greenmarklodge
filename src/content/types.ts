@@ -56,7 +56,8 @@ export type Room = Item & {
 /** The subset the booking form + API need. */
 export type RoomOption = Pick<Room, "slug" | "name" | "maxGuests" | "bed" | "view" | "priceFrom"> & { image: Img };
 
-export type Experience = Item & { title: string; italic: string; text: string; image: Img; cta: string };
+/** `images` are extra photos shown as tiles under the main one (Experiences page). */
+export type Experience = Item & { title: string; italic: string; text: string; image: Img; images?: Img[]; cta?: string };
 export type Venue = Item & { name: string; kind: string; hours: string; text: string; image: Img };
 export type Testimonial = Item & { text: string; who: string };
 export type Feature = { title: string; text: string };
@@ -87,7 +88,17 @@ export type GardensPage = {
   surroundings: PhotoCard;
   cta: Cta;
 };
-export type ExperiencesPage = { hero: Hero; cta: Cta };
+/** `slides` join hero.image in the header slideshow. */
+/** A celebration the lodge hosts (Events page); `local` is the Amharic name. */
+export type EventCard = { image: Img; title: Title; local: string; text: string };
+export type EventsPage = {
+  hero: Hero;
+  intro: { eyebrow: string; statement: string };
+  celebrations: { eyebrow: string; title: Title; items: EventCard[] };
+  meetings: { eyebrow: string; title: Title; text: string; image: Img; highlights: string[]; linkLabel: string };
+  cta: Cta;
+};
+export type ExperiencesPage = { hero: Hero; slides: Img[]; cta: Cta };
 export type GalleryPage = { hero: Hero; images: Img[] };
 export type ContactPage = { hero: Hero; formTitle: Title };
 

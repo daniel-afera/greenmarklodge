@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
-import ParallaxImage from "@/components/ui/ParallaxImage";
+import ExperienceGallery from "@/components/experiences/ExperienceGallery";
 import Reveal from "@/components/ui/Reveal";
 import CtaBand from "@/components/ui/CtaBand";
 import { getExperiences, getExperiencesPage, getSettings } from "@/content";
 import { pageMeta } from "@/lib/seo";
-import { titlePlain } from "@/lib/title";
+import { experienceAnchor, titlePlain } from "@/lib/title";
 import { cms } from "@/cms/mark";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -17,16 +17,16 @@ export default async function ExperiencesPage() {
   const [page, experiences] = await Promise.all([getExperiencesPage(), getExperiences()]);
   return (
     <>
-      <PageHero hero={page.hero} doc="experiencesPage" />
+      <PageHero hero={page.hero} slides={page.slides} doc="experiencesPage" />
 
       <section className="container-luxe flex flex-col gap-[clamp(96px,11vw,170px)] py-[clamp(96px,11vw,170px)]">
         {experiences.map((e, i) => (
-          <article key={`${e.title}-${i}`} className="grid grid-cols-12 items-center gap-6">
-            <ParallaxImage
-              image={e.image}
+          <article key={`${e.title}-${i}`} id={experienceAnchor(e)} className="grid scroll-mt-28 grid-cols-12 items-center gap-6">
+            <ExperienceGallery
+              images={[e.image, ...(e.images ?? [])]}
               cms={cms(e._id, "image")}
-              sizes="(min-width:768px) 60vw, 100vw"
-              className={`col-span-12 h-[clamp(340px,44vw,660px)] md:col-span-7 ${i % 2 ? "md:order-2 md:col-start-6" : ""}`}
+              frameClassName="h-[clamp(320px,40vw,600px)]"
+              className={`col-span-12 md:col-span-7 ${i % 2 ? "md:order-2 md:col-start-6" : ""}`}
             />
             <Reveal className={`col-span-12 md:col-span-4 ${i % 2 ? "md:order-1 md:col-start-1" : "md:col-start-9"}`}>
               <span className="mb-6 block font-serif text-[clamp(80px,9vw,140px)] font-light leading-none text-bronze/40">{String(i + 1).padStart(2, "0")}</span>

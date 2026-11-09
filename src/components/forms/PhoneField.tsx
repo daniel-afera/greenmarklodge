@@ -78,7 +78,7 @@ export default function PhoneField({
             </span>
           )}
           className="shrink-0"
-          triggerClassName="min-h-12 pr-3 mr-3 border-r border-ink/15 text-[15px]"
+          triggerClassName="min-h-12 pr-3 border-r border-ink/15 text-[15px]"
           menuClassName="w-[min(340px,calc(100vw-40px))]"
         />
         <input
@@ -92,7 +92,7 @@ export default function PhoneField({
           aria-invalid={!!error}
           aria-describedby={`${id}-msg`}
           placeholder="91 123 4567"
-          className="!border-0 !pr-6"
+          className="!border-0 !pl-4 !pr-6"
         />
       </div>
     </Field>
