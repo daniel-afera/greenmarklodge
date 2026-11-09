@@ -1,5 +1,6 @@
 "use client";
 
+import { SHOW_EDIT_ON_SITE } from "@/cms/flags";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -42,9 +43,11 @@ export default function Sidebar({ items, name, role, siteName }: { items: NavIte
               {!!item.count && <span className="min-w-6 rounded-full bg-bronze px-2 text-center text-xs text-ink">{item.count}</span>}
             </Link>
           ))}
-          <a href="/api/edit?to=/" className="mt-6 border border-ivory/25 px-3 py-2.5 text-center text-sm text-ivory hover:border-bronze-light">
-            Edit on the site →
-          </a>
+          {SHOW_EDIT_ON_SITE && (
+            <a href="/api/edit?to=/" className="mt-6 border border-ivory/25 px-3 py-2.5 text-center text-sm text-ivory hover:border-bronze-light">
+              Edit on the site →
+            </a>
+          )}
         </nav>
         <div className="mt-10 border-t border-ivory/15 pt-6 text-sm">
           <div className="text-ivory">{name || "Signed in"}</div>

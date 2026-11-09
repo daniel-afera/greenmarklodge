@@ -1,3 +1,4 @@
+import { SHOW_EDIT_ON_SITE } from "@/cms/flags";
 import Link from "next/link";
 import { requireUser } from "@/cms/auth";
 import { rowLabel } from "@/cms/labels";
@@ -13,8 +14,12 @@ export default async function AdminHome() {
       <div className="eyebrow mb-3 text-bronze-deep">Welcome{staff.name ? `, ${staff.name}` : ""}</div>
       <h1 className="display mb-6 text-5xl">Unpublished changes</h1>
       <p className="mb-10 max-w-xl text-sm leading-relaxed text-muted">
-        Edits are saved as drafts automatically. Visitors only see them after you publish. Use <strong>Edit on the site</strong> in the menu to change text and photos right on the
-        page.
+        Edits are saved as drafts automatically. Visitors only see them after you publish.
+        {SHOW_EDIT_ON_SITE && (
+          <>
+            {" "}Use <strong>Edit on the site</strong> in the menu to change text and photos right on the page.
+          </>
+        )}
       </p>
       {rows.length ? (
         <ul className="border-t border-ink/10">
