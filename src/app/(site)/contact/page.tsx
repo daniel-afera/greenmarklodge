@@ -27,6 +27,11 @@ export default async function ContactPage() {
             <a href={telHref(s.phone)} className="hlink block font-serif text-[clamp(28px,2.6vw,38px)]" {...cms("siteSettings", "phone")}>
               {s.phone}
             </a>
+            {s.phone2 && (
+              <a href={telHref(s.phone2)} className="hlink mt-1 block font-serif text-[clamp(28px,2.6vw,38px)]" {...cms("siteSettings", "phone2")}>
+                {s.phone2}
+              </a>
+            )}
             <a href={`mailto:${s.email}`} className="hlink mt-2 block font-serif text-[clamp(22px,2vw,30px)] text-muted" {...cms("siteSettings", "email")}>
               {s.email}
             </a>

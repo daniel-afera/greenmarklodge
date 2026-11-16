@@ -59,7 +59,7 @@ export function hotelJsonLd(site: SiteSettings, rooms: RoomOption[]) {
     url,
     logo: `${url}/logo.svg`,
     ...(image ? { image: `${url}${image}` } : {}),
-    ...(real(site.phone) ? { telephone: site.phone } : {}),
+    ...(real(site.phone) ? { telephone: real(site.phone2) ? [site.phone, site.phone2] : site.phone } : {}),
     ...(real(site.email) ? { email: site.email } : {}),
     address: { "@type": "PostalAddress", streetAddress: site.address.line1, addressLocality: site.address.line2, addressCountry: site.address.country },
     ...(geo ? { geo: { "@type": "GeoCoordinates", ...geo } } : {}),

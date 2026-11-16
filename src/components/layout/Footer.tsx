@@ -38,6 +38,11 @@ export default function Footer({ settings: s }: { settings: SiteSettings }) {
               <a className="hover:text-bronze-light" href={telHref(s.phone)} {...cms("siteSettings", "phone")}>
                 {s.phone}
               </a>
+              {s.phone2 && (
+                <a className="hover:text-bronze-light" href={telHref(s.phone2)} {...cms("siteSettings", "phone2")}>
+                  {s.phone2}
+                </a>
+              )}
               <a className="hover:text-bronze-light" href={`mailto:${s.email}`} {...cms("siteSettings", "email")}>
                 {s.email}
               </a>

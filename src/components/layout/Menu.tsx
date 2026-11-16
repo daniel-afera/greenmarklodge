@@ -119,6 +119,12 @@ export default function Menu({ onClose }: { onClose: () => void }) {
               <div className="eyebrow mb-2 text-bronze-light">Reservations</div>
               {site.phone}
               <br />
+              {site.phone2 && (
+                <>
+                  {site.phone2}
+                  <br />
+                </>
+              )}
               {site.email}
             </div>
             <div>

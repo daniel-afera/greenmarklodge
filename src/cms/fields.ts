@@ -63,6 +63,7 @@ export const singletons = {
       text("tagline", "Tagline", 60),
       para("description", "Description (search engines & sharing)", 300),
       text("phone", "Phone", 30),
+      text("phone2", "Second phone (optional)", 30),
       text("whatsapp", "WhatsApp number", 30),
       text("email", "Email", 120, { pattern: ["^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", "Enter a valid email address."] }),
       { kind: "group", key: "address", label: "Address", fields: [text("line1", "Line 1", 80), text("line2", "Line 2", 80), text("country", "Country", 60)] },

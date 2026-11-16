@@ -24,7 +24,8 @@ export default function MapEmbed({ src, address, cms }: { src: string; address: 
     return () => io.disconnect();
   }, [load]);
 
-  const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+  const coords = src.match(/[?&]q=(-?\d{1,2}\.\d+),\s*(-?\d{1,3}\.\d+)/);
+  const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coords ? `${coords[1]},${coords[2]}` : address)}`;
 
   return (
     <div ref={ref} className="relative h-[320px] overflow-hidden border border-ink/10 bg-sand/40" {...cms}>

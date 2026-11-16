@@ -80,11 +80,12 @@ export const fallbackSettings: SiteSettings = {
   tagline: "Lodge · Bishoftu",
   description:
     "Green Mark Lodge in Bishoftu, Ethiopia — private villas and guest rooms surrounded by botanical gardens, with garden dining, the Buna Bar and the Ethiopian coffee ceremony.",
-  phone: "+251 00 000 0000",
-  whatsapp: "+251 00 000 0000",
+  phone: "+251 93 912 4444",
+  phone2: "+251 95 054 4444",
+  whatsapp: "+251 93 912 4444",
   email: "reservations@greenmarklodge.com",
-  address: { line1: "Lake Bishoftu", line2: "Bishoftu, Oromia", country: "Ethiopia" },
-  mapEmbed: "https://www.google.com/maps?q=Lake+Bishoftu,+Ethiopia&z=13&output=embed",
+  address: { line1: "Bishoftu", line2: "East Shewa, Oromia", country: "Ethiopia" },
+  mapEmbed: "https://www.google.com/maps?q=8.773236,38.944988&z=15&output=embed",
   directions: "About an hour's drive from Bole International Airport. We're happy to arrange a private transfer.",
   social: [
     { label: "Instagram", href: "https://instagram.com" },

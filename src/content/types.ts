@@ -25,6 +25,7 @@ export type SiteSettings = {
   tagline: string;
   description: string;
   phone: string;
+  phone2: string;
   whatsapp: string;
   email: string;
   address: { line1: string; line2: string; country: string };
